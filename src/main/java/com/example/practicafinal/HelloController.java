@@ -12,5 +12,3 @@ public class HelloController {
         welcomeText.setText("Welcome to JavaFX Application!");
     }
 }
-hola que tal
-muy bien amor mio
