@@ -1,4 +1,5 @@
 package Juego;
+import Juego.listas.ListaSimplementeEnlazada;
 
 public class Habitacion {
     private Celda[][] matriz;
