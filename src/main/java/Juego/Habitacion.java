@@ -1,5 +1,7 @@
 package Juego;
 
+import Juego.listas.ListaSimplementeEnlazada;
+
 public class Habitacion {
     private Celda[][] matriz;
     private int filas;
@@ -100,7 +102,43 @@ public class Habitacion {
         if (esPosicionValida(fila, columna)) {
             Celda celda = getCelda(fila, columna);
             celda.setTipo(Celda.Tipo.TRAMPA);
-            celda.setAccesible(false); // Las trampas no son accesibles inicialmente
+            celda.setAccesible(true);
+        }
+    }
+
+    public ListaSimplementeEnlazada<Posicion> calcularAlcanzables(Posicion origen, int distanciaMaxima) {
+        ListaSimplementeEnlazada<Posicion> resultado = new ListaSimplementeEnlazada<>();
+        if (!esPosicionValida(origen.getFila(), origen.getColumna())) {
+            return resultado;
+        }
+
+        boolean[][] visitado = new boolean[filas][columnas];
+        Cola<Posicion> cola = new Cola<>();
+        Cola<Integer> distancias = new Cola<>();
+        cola.enqueue(origen);
+        distancias.enqueue(0);
+        visitado[origen.getFila()][origen.getColumna()] = true;
+
+        while (!cola.estaVacia()) {
+            Posicion actual = cola.dequeue();
+            int distancia = distancias.dequeue();
+            resultado.insertarUltimo(actual);
+            if (distancia < distanciaMaxima) {
+                encolarSiValida(actual.getFila() - 1, actual.getColumna(), distancia + 1, visitado, cola, distancias);
+                encolarSiValida(actual.getFila() + 1, actual.getColumna(), distancia + 1, visitado, cola, distancias);
+                encolarSiValida(actual.getFila(), actual.getColumna() - 1, distancia + 1, visitado, cola, distancias);
+                encolarSiValida(actual.getFila(), actual.getColumna() + 1, distancia + 1, visitado, cola, distancias);
+            }
+        }
+        return resultado;
+    }
+
+    private void encolarSiValida(int fila, int columna, int distancia, boolean[][] visitado,
+                                 Cola<Posicion> cola, Cola<Integer> distancias) {
+        if (esPosicionValida(fila, columna) && !visitado[fila][columna] && matriz[fila][columna].estaLibreParaMovimiento()) {
+            visitado[fila][columna] = true;
+            cola.enqueue(new Posicion(fila, columna));
+            distancias.enqueue(distancia);
         }
     }
 

@@ -1,5 +1,7 @@
 package Juego;
 
+import Juego.listas.ListaSimplementeEnlazada;
+
 public class Jugador {
     // Estadísticas básicas
     private int vidaMax;

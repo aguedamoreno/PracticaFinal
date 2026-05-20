@@ -102,6 +102,47 @@ public class ListaSimplementeEnlazada<T> implements Lista<T>, Iterable<T> {
         return contador;    //devuelve el número de elementos que hay
     }
 
+    public int tamaño() {
+        return size();
+    }
+
+    public T obtener(int indice) {
+        if (indice < 0) {
+            return null;
+        }
+        ElementoSE<T> actual = primero;
+        int contador = 0;
+        while (actual != null) {
+            if (contador == indice) {
+                return actual.dato;
+            }
+            contador++;
+            actual = actual.siguiente;
+        }
+        return null;
+    }
+
+    public T eliminar(int indice) {
+        if (indice < 0 || primero == null) {
+            return null;
+        }
+        if (indice == 0) {
+            return eliminarPrimero();
+        }
+        ElementoSE<T> anterior = primero;
+        int contador = 0;
+        while (anterior.siguiente != null && contador < indice - 1) {
+            anterior = anterior.siguiente;
+            contador++;
+        }
+        if (anterior.siguiente == null) {
+            return null;
+        }
+        T dato = anterior.siguiente.dato;
+        anterior.siguiente = anterior.siguiente.siguiente;
+        return dato;
+    }
+
     /** Metodo que comprueba si un dato está en la lista
      */
     public boolean contiene(T dato) {

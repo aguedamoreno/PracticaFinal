@@ -5,4 +5,5 @@ module com.example.practicafinal {
 
     opens com.example.practicafinal to javafx.fxml;
     exports com.example.practicafinal;
+    exports Juego;
 }

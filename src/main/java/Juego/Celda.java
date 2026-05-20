@@ -66,6 +66,16 @@ public class Celda {
         this.accesible = accesible;
     }
 
+    public boolean estaLibreParaMovimiento() {
+        return accesible && (tipo == Tipo.VACIA || tipo == Tipo.PUERTA || tipo == Tipo.SALIDA || tipo == Tipo.TRAMPA);
+    }
+
+    public void limpiar() {
+        this.tipo = Tipo.VACIA;
+        this.contenido = null;
+        this.accesible = true;
+    }
+
     @Override
     public String toString() {
         switch (tipo) {

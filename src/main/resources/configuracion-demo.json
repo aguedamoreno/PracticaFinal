@@ -1,0 +1,6 @@
+{
+  "habitaciones": ["Entrada", "Sala", "Salida"],
+  "grafo": [["Entrada", "Sala"], ["Sala", "Salida"]],
+  "jugadorInicial": {"habitacion": "Entrada", "fila": 0, "columna": 0},
+  "objetivo": "Llegar a una celda SALIDA"
+}

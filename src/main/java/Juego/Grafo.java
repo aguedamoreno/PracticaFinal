@@ -1,5 +1,7 @@
 package Juego;
 
+import Juego.listas.ListaSimplementeEnlazada;
+
 public class Grafo {
     private class Arista {
         int destino;
