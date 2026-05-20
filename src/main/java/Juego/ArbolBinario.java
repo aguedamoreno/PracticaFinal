@@ -1,7 +1,5 @@
 package Juego;
 
-import Juego.listas.ListaSimplementeEnlazada;
-
 public class ArbolBinario<T extends Comparable<T>> {
     private Nodo<T> raiz;
     private int size;

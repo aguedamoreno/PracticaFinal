@@ -1,4 +1,5 @@
 package Juego;
+import Juego.listas.ListaSimplementeEnlazada;
 
 import Juego.listas.ListaSimplementeEnlazada;
 

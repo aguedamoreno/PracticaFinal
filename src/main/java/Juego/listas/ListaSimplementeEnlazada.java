@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class ListaSimplementeEnlazada<T> implements Lista<T>, Iterable<T> {
     // primer elemento de la lista
-    private ElementoSE<T> primero;
+    ElementoSE<T> primero;
 
     /** Constructor que inicializa la lista como vacía
      */

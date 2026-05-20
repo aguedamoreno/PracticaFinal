@@ -1,4 +1,6 @@
 package Juego;
+import Juego.listas.ListaSimplementeEnlazada;
+import Juego.listas.Cola;
 
 import Juego.listas.ListaSimplementeEnlazada;
 
