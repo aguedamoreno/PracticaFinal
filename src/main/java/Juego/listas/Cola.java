@@ -142,6 +142,10 @@ public class Cola<T> implements InterfazCola<T>{
         }
         return copia;
     }
+    @Override
+    public boolean estaVacia() {
+        return primero == null;
+    }
 
     /** Metodo que pasa la cola a texto
      */

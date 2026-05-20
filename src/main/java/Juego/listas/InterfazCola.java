@@ -5,6 +5,7 @@ public interface InterfazCola<T> {
     T dequeue();
     T peek();
     T peekFinal();
+    boolean estaVacia();
     void desencolarTodos();
     void invertir();
     int contarOcurrencias(T dato);
