@@ -1,4 +1,6 @@
 package Juego;
+import Juego.listas.ListaSimplementeEnlazada;
+import Juego.listas.Cola;
 
 public class Grafo {
     private class Arista {

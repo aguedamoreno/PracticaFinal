@@ -1,6 +1,7 @@
 package Juego;
+import Juego.listas.ListaSimplementeEnlazada;
 
-public class ArbolBinario<T extends Comparable<T>> {
+public class ArbolBinario <T extends Comparable<T>> {
     private Nodo<T> raiz;
     private int size;
 
@@ -23,6 +24,7 @@ public class ArbolBinario<T extends Comparable<T>> {
 
     /**
      * Inserta un elemento en el árbol binario de búsqueda
+     *
      * @param dato Elemento a insertar
      */
     public void insertar(T dato) {
@@ -46,6 +48,7 @@ public class ArbolBinario<T extends Comparable<T>> {
 
     /**
      * Busca un elemento en el árbol
+     *
      * @param dato Elemento a buscar
      * @return true si existe, false en caso contrario
      */
@@ -71,6 +74,7 @@ public class ArbolBinario<T extends Comparable<T>> {
 
     /**
      * Recorrido inorden (izquierdo, raíz, derecho)
+     *
      * @return Lista con los elementos en orden
      */
     public ListaSimplementeEnlazada<T> inorden() {
@@ -89,6 +93,7 @@ public class ArbolBinario<T extends Comparable<T>> {
 
     /**
      * Recorrido preorden (raíz, izquierdo, derecho)
+     *
      * @return Lista con los elementos en preorden
      */
     public ListaSimplementeEnlazada<T> preorden() {
@@ -107,6 +112,7 @@ public class ArbolBinario<T extends Comparable<T>> {
 
     /**
      * Recorrido postorden (izquierdo, derecho, raíz)
+     *
      * @return Lista con los elementos en postorden
      */
     public ListaSimplementeEnlazada<T> postorden() {
@@ -114,6 +120,7 @@ public class ArbolBinario<T extends Comparable<T>> {
         postordenRecursivo(raiz, resultado);
         return resultado;
     }
+
 
     private void postordenRecursivo(Nodo<T> nodo, ListaSimplementeEnlazada<T> lista) {
         if (nodo != null) {
