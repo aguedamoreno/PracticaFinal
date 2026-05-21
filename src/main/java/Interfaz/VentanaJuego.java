@@ -186,7 +186,7 @@ public class VentanaJuego {
 
                 // Estilos visuales según el tipo de contenido
                 if (i == jugador.getPosicionX() && j == jugador.getPosicionY()) {
-                    btnCelda.setText("🤠"); // Jugador
+                    btnCelda.setText("J"); // Jugador
                     btnCelda.setStyle("-fx-background-color: #87CEEB; -fx-font-weight: bold;");
                 } else {
                     switch (celda.getTipo()) {
@@ -194,23 +194,23 @@ public class VentanaJuego {
                             btnCelda.setText("");
                             break;
                         case OBJETO:
-                            btnCelda.setText("🎁");
+                            btnCelda.setText("O");
                             btnCelda.setStyle("-fx-background-color: #FFE4B5;");
                             break;
                         case ENEMIGO:
-                            btnCelda.setText("👹");
+                            btnCelda.setText("E");
                             btnCelda.setStyle("-fx-background-color: #FFB6C1;");
                             break;
                         case TRAMPA:
-                            btnCelda.setText("💀");
+                            btnCelda.setText("T");
                             btnCelda.setStyle("-fx-background-color: #D3D3D3;");
                             break;
                         case PUERTA:
-                            btnCelda.setText("🚪");
+                            btnCelda.setText("P");
                             btnCelda.setStyle("-fx-background-color: #98FB98;");
                             break;
                         case SALIDA:
-                            btnCelda.setText("🏁");
+                            btnCelda.setText("S");
                             btnCelda.setStyle("-fx-background-color: #GOLD;");
                             break;
                     }
