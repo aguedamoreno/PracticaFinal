@@ -1,4 +1,5 @@
 package Juego;
+
 import Juego.listas.ListaSimplementeEnlazada;
 
 public class Habitacion {
@@ -181,6 +182,7 @@ public class Habitacion {
         return posiciones;
     }
 
+
     public ListaSimplementeEnlazada<Posicion> calcularAlcanzables(Posicion origen, int distanciaMaxima) {
 
         ListaSimplementeEnlazada<Posicion> alcanzables = new ListaSimplementeEnlazada<>();
@@ -203,6 +205,7 @@ public class Habitacion {
 
         return alcanzables;
     }
+
 
     @Override
     public String toString() {

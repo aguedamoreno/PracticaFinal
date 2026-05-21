@@ -15,6 +15,8 @@ public class Grafo {
         }
     }
 
+
+
     private class Vertice {
         ListaSimplementeEnlazada<Arista> aristas;
         Object datos; // Para almacenar datos asociados al vértice (ej: Habitación)

@@ -282,4 +282,5 @@ public class MotorJuego {
     public boolean isDerrota() {
         return derrota;
     }
+
 }
