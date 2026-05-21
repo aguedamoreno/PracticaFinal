@@ -181,6 +181,29 @@ public class Habitacion {
         return posiciones;
     }
 
+    public ListaSimplementeEnlazada<Posicion> calcularAlcanzables(Posicion origen, int distanciaMaxima) {
+
+        ListaSimplementeEnlazada<Posicion> alcanzables = new ListaSimplementeEnlazada<>();
+
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                if (matriz[i][j].isAccesible()) {
+
+                    int distancia =
+                            Math.abs(i - origen.getFila()) +
+                                    Math.abs(j - origen.getColumna());
+
+                    if (distancia <= distanciaMaxima) {
+                        alcanzables.insertarUltimo(new Posicion(i, j));
+                    }
+                }
+            }
+        }
+
+        return alcanzables;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
