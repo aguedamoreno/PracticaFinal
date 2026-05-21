@@ -2,10 +2,10 @@ package Juego;
 
 import Juego.listas.ListaSimplementeEnlazada;
 
-public class Cola<T> {
+public class Cola2<T> {
     private final ListaSimplementeEnlazada<T> elementos;
 
-    public Cola() {
+    public Cola2() {
         this.elementos = new ListaSimplementeEnlazada<>();
     }
 

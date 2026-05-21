@@ -20,7 +20,7 @@ class EstructurasTest {
 
     @Test
     void colaRespetaOrdenFifo() {
-        Cola<Integer> cola = new Cola<>();
+        Cola2<Integer> cola = new Cola2<>();
         cola.enqueue(1);
         cola.enqueue(2);
 
