@@ -182,22 +182,37 @@ public class Habitacion {
         return posiciones;
     }
 
-
-    public ListaSimplementeEnlazada<Posicion> calcularAlcanzables(Posicion origen, int distanciaMaxima) {
-
+    /**
+     * Calcula las posiciones alcanzables en cruz (solo arriba, abajo, izquierda, derecha)
+     * a una distancia máxima dada (por regla, 2 casillas).
+     */
+    public ListaSimplementeEnlazada<Posicion> calcularPosicionesAlcanzables(Posicion origen, int distanciaMaxima) {
         ListaSimplementeEnlazada<Posicion> alcanzables = new ListaSimplementeEnlazada<>();
 
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
+        if (origen == null) return alcanzables;
 
-                if (matriz[i][j].isAccesible()) {
+        int filaOrig = origen.getFila();
+        int colOrig = origen.getColumna();
 
-                    int distancia =
-                            Math.abs(i - origen.getFila()) +
-                                    Math.abs(j - origen.getColumna());
+        // El propio origen es alcanzable (por si decide no moverse)
+        alcanzables.insertarUltimo(origen);
 
-                    if (distancia <= distanciaMaxima) {
-                        alcanzables.insertarUltimo(new Posicion(i, j));
+        // Direcciones en cruz: {fila, columna} -> Arriba, Abajo, Izquierda, Derecha
+        int[][] direcciones = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+
+        for (int[] dir : direcciones) {
+            for (int d = 1; d <= distanciaMaxima; d++) {
+                int nuevaFila = filaOrig + (dir[0] * d);
+                int nuevaCol = colOrig + (dir[1] * d);
+
+                if (esPosicionValida(nuevaFila, nuevaCol)) {
+                    Celda celda = getCelda(nuevaFila, nuevaCol);
+                    // Si hay un muro o no es accesible, se corta la línea en esa dirección
+                    if (celda != null && celda.estaLibreParaMovimiento()) {
+                        alcanzables.insertarUltimo(new Posicion(nuevaFila, nuevaCol));
+                    } else {
+                        // Si se topa con un obstáculo infranqueable, no puede saltárselo
+                        break;
                     }
                 }
             }

@@ -10,6 +10,8 @@ public class MotorJuego {
     private int turnosRestantes;
     private boolean victoria;
     private boolean derrota;
+    private boolean jugadorYaSeMovioEnEsteTurno = false;
+    private boolean jugadorYaActuoEnEsteTurno = false;
 
     public MotorJuego(Grafo mapa, Jugador jugador, int habitacionInicialIndice, int turnosRestantes) {
         this.mapa = mapa;
@@ -56,28 +58,86 @@ public class MotorJuego {
         return new MotorJuego(mapa, jugador, iEntrada, 30);
     }
 
-    public void moverJugador(int fila, int columna) throws JuegoException {
-        validarPartidaActiva();
-        Habitacion habitacion = getHabitacionActual();
-        if (!habitacion.esPosicionValida(fila, columna)) {
-            throw new JuegoException("Movimiento fuera de la habitacion.");
+    public void moverJugador(int nuevaFila, int nuevaColumna) throws JuegoException {
+        if (derrota || victoria) {
+            throw new JuegoException("La partida ya ha finalizado.");
         }
-        int distancia = Math.abs(fila - jugador.getPosicionX()) + Math.abs(columna - jugador.getPosicionY());
-        if (distancia > jugador.getVelocidad()) {
-            throw new JuegoException("La celda esta fuera del rango de movimiento.");
+        if (jugadorYaSeMovioEnEsteTurno) {
+            throw new JuegoException("Ya te has movido en este turno.");
         }
-        Celda destino = habitacion.getCelda(fila, columna);
-        if (!destino.estaLibreParaMovimiento()) {
-            throw new JuegoException("La celda destino no es transitable.");
+        if (jugadorYaActuoEnEsteTurno) {
+            throw new JuegoException("No puedes moverte después de haber realizado una acción.");
         }
-        jugador.setPosicionX(fila);
-        jugador.setPosicionY(columna);
-        registro.registrar("Jugador se mueve a (" + fila + "," + columna + ").");
-        resolverCeldaDestino(destino);
-        if (!victoria) {
-            turnoEnemigos();
-            consumirTurno();
+
+        // Obtener la habitación actual usando tu método real
+        Habitacion habActual = getHabitacionActual();
+
+        // Obtener la posición actual del jugador
+        Posicion origen = new Posicion(jugador.getPosicionX(), jugador.getPosicionY());
+
+        // Validar si la celda destino está dentro de las alcanzables (MÁXIMO 2 EN CRUZ)
+        ListaSimplementeEnlazada<Posicion> alcanzables = habActual.calcularPosicionesAlcanzables(origen, 2);
+        boolean destinoValido = false;
+
+        for (int i = 0; i < alcanzables.tamaño(); i++) {
+            Posicion p = alcanzables.obtener(i);
+            if (p.getFila() == nuevaFila && p.getColumna() == nuevaColumna) {
+                destinoValido = true;
+                break;
+            }
         }
+
+        if (!destinoValido) {
+            throw new JuegoException("Movimiento inválido. Solo puedes moverte hasta 2 casillas en línea recta (arriba, abajo, izquierda, derecha).");
+        }
+
+        Celda celdaDestino = habActual.getCelda(nuevaFila, nuevaColumna);
+
+        // --- CASO 1: LA CASILLA DESTINO ES UNA PUERTA ---
+        if (celdaDestino.getTipo() == Celda.Tipo.PUERTA) {
+            String idHabitacionDestino = (String) celdaDestino.getContenido();
+            registro.registrar("¡El jugador cruza una puerta hacia la habitación " + idHabitacionDestino + "!");
+
+            // Usamos tu lógica exacta original para cambiar el índice de la habitación en el Grafo
+            int nuevoIndice = buscarHabitacionPorId(idHabitacionDestino);
+            if (nuevoIndice != -1) {
+                habitacionActualIndice = nuevoIndice;
+                jugador.setHabitacionActualId(idHabitacionDestino);
+
+                // Teletransportamos al jugador al origen (0,0) de la nueva habitación o donde corresponda
+                jugador.setPosicionX(0);
+                jugador.setPosicionY(0);
+            }
+
+            // Al abrir una puerta se acaba el turno al instante
+            finalizarTurnoCompleto();
+            return;
+        }
+
+        // --- CASO 2: LA CASILLA DESTINO ES LA SALIDA ---
+        if (celdaDestino.getTipo() == Celda.Tipo.SALIDA) {
+            victoria = true;
+            registro.registrar("¡Has abierto la puerta de salida! ¡Ganaste la partida!");
+            return;
+        }
+
+        // --- CASO 3: MOVIMIENTO NORMAL ---
+        // Limpiar la celda antigua del jugador en la habitación
+        Celda celdaActual = habActual.getCelda(jugador.getPosicionX(), jugador.getPosicionY());
+        if (celdaActual != null) {
+            celdaActual.limpiar();
+        }
+
+        // Actualizar coordenadas internas del jugador
+        jugador.setPosicionX(nuevaFila);
+        jugador.setPosicionY(nuevaColumna);
+
+        // Colocar al jugador en la nueva celda (usamos VACIA porque no tienes tipo JUGADOR en Celda.java)
+        celdaDestino.setTipo(Celda.Tipo.VACIA);
+        celdaDestino.setContenido(jugador);
+
+        jugadorYaSeMovioEnEsteTurno = true;
+        registro.registrar("El jugador se movió a la casilla (" + nuevaFila + ", " + nuevaColumna + ").");
     }
 
     public void recogerObjetoAdyacente(int fila, int columna) throws JuegoException {
@@ -115,6 +175,9 @@ public class MotorJuego {
     }
 
     public void atacarAdyacente(int fila, int columna) throws JuegoException {
+        if (jugadorYaActuoEnEsteTurno) {
+            throw new JuegoException("Ya has realizado tu acción en este turno.");
+        }
         validarPartidaActiva();
         validarAdyacente(fila, columna);
         Celda celda = getHabitacionActual().getCelda(fila, columna);
@@ -128,11 +191,16 @@ public class MotorJuego {
         if (!enemigo.estaVivo()) {
             celda.limpiar();
             registro.registrar(enemigo.getNombre() + " queda derrotado.");
+            jugadorYaActuoEnEsteTurno = true;
+            registro.registrar("El jugador atacó al enemigo en (" + fila + ", " + columna + ").");
+
+            // Ejecuta automáticamente el turno de los enemigos y resta el turno de la partida
+            finalizarTurnoCompleto();
         }
     }
 
     public ListaSimplementeEnlazada<Posicion> getCeldasAlcanzables() {
-        return getHabitacionActual().calcularAlcanzables(new Posicion(jugador.getPosicionX(), jugador.getPosicionY()), jugador.getVelocidad());
+        return getHabitacionActual().calcularPosicionesAlcanzables(new Posicion(jugador.getPosicionX(), jugador.getPosicionY()), jugador.getVelocidad());
     }
 
     public Object[] getCaminoMinimoSalida() {
@@ -249,6 +317,51 @@ public class MotorJuego {
             }
         }
         return -1;
+    }
+
+    private void finalizarTurnoCompleto() {
+        // 1. Turno de los enemigos de la habitación actual
+        procesarTurnoEnemigosLocales();
+
+        // 2. Restar turnos globales
+        turnosRestantes--;
+        registro.registrar("Turnos restantes de partida: " + turnosRestantes);
+
+        // 3. Comprobar condiciones de derrota por falta de tiempo o muerte
+        if (jugador.getVidaActual() <= 0) {
+            derrota = true;
+            registro.registrar("El jugador ha muerto. Fin del juego.");
+        } else if (turnosRestantes <= 0 && !victoria) {
+            derrota = true;
+            registro.registrar("Te has quedado sin turnos. ¡Fin del juego!");
+        }
+
+        // 4. Reiniciar los flags para el nuevo turno del jugador
+        jugadorYaSeMovioEnEsteTurno = false;
+        jugadorYaActuoEnEsteTurno = false;
+    }
+
+    private void procesarTurnoEnemigosLocales() {
+        Habitacion hab = getHabitacionActual();
+        // Recorrer la matriz de la habitación para encontrar enemigos vivientes
+        for (int f = 0; f < hab.getFilas(); f++) {
+            for (int c = 0; c < hab.getColumnas(); c++) {
+                Celda celda = hab.getCelda(f, c);
+                if (celda != null && celda.getTipo() == Celda.Tipo.ENEMIGO) {
+                    Enemigo enemigo = (Enemigo) celda.getContenido();
+                    if (enemigo != null && enemigo.estaVivo()) {
+                        // Aquí va la IA básica de tu enemigo:
+                        // Ej: Si está a rango 1 del jugador, le ataca. Si no, se acerca.
+                        // (Recordando que no cambian de habitación)
+                    }
+                }
+            }
+        }
+    }
+
+    public void finalizarTurnoVoluntariamente() {
+        registro.registrar("El jugador decide terminar su turno.");
+        finalizarTurnoCompleto();
     }
 
     public Habitacion getHabitacionActual() {
