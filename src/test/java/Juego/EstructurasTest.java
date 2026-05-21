@@ -1,6 +1,7 @@
 package Juego;
 
 import Juego.listas.ListaSimplementeEnlazada;
+import Juego.listas.Cola;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ class EstructurasTest {
 
     @Test
     void colaRespetaOrdenFifo() {
-        Cola2<Integer> cola = new Cola2<>();
+        Cola<Integer> cola = new Cola<>();
         cola.enqueue(1);
         cola.enqueue(2);
 

@@ -5,36 +5,43 @@ public class Cola<T> implements InterfazCola<T>{
     ElementoSE<T> primero;
     //último elemento de la cola, el último que se elimina
     ElementoSE<T> ultimo;
+    private int tamano;
 
     /** Constructor que inicializa la cola como vacía
      */
     public Cola() {
         primero = null;
         ultimo = null;
+        tamano = 0;
     }
 
     /** Metodo para añadir un elemento al final de la cola
      */
     @Override
     public void enqueue(T dato) {
-        ElementoSE<T> nuevo = new ElementoSE<>(dato);   //creamos nuevo elemento
-        if (primero == null) {  //si la lista está vacía, el primer y el último es el nuevo
+        ElementoSE<T> nuevo = new ElementoSE<>(dato);
+        if (primero == null) {
             primero = nuevo;
             ultimo = nuevo;
-        } else {     //si la lista no está vacía
-            ultimo.siguiente = nuevo;   //el último elemento apunta al nuevo
-            ultimo = nuevo; //el nuevo pasa a ser el último elemento
+        } else {
+            ultimo.siguiente = nuevo;
+            ultimo = nuevo;
         }
+        tamano++;
     }
 
     /** Metodo para eliminar el primer elemento de la cola
      */
     @Override
     public T dequeue() {
-        if (primero == null) return null;   //si la lista está vacía no hay nada que eliminar
-        T dato = primero.dato;  //guardamos el dato del elemento que vamos a eliminar
-        primero = primero.siguiente;    //ahora el segundo elemento pasa a ser el primero y desaparece así el que era el primero
-        return dato;    //devuelve el dato del elemento eliminado
+        if (primero == null) return null;
+        T dato = primero.dato;
+        primero = primero.siguiente;
+        if (primero == null) {
+            ultimo = null;
+        }
+        tamano--;
+        return dato;
     }
 
     /** Metodo que devuelve el primer elemento sin eliminarlo
@@ -142,6 +149,13 @@ public class Cola<T> implements InterfazCola<T>{
         }
         return copia;
     }
+
+    /** Metodo que mide el tamaño de la cola
+     */
+    public int size() {
+        return tamano;
+    }
+
     @Override
     public boolean estaVacia() {
         return primero == null;
