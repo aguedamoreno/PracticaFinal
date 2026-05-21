@@ -12,7 +12,7 @@ public class Celda {
 
     private Tipo tipo;
     private Object contenido; // Puede ser Enemigo, Objeto, null, etc.
-    private boolean accesible; // Si el jugador puede pasar por aquí (ej: no es una pared)
+    private boolean accesible; // Controla si es un muro/obstáculo infranqueable
 
     public Celda() {
         this.tipo = Tipo.VACIA;
@@ -23,23 +23,13 @@ public class Celda {
     public Celda(Tipo tipo) {
         this.tipo = tipo;
         this.contenido = null;
-        this.accesible = true;
-
-        // Algunas celdas por defecto no son accesibles
-        if (tipo == Tipo.TRAMPA) {
-            this.accesible = false;
-        }
+        this.accesible = true; // Por defecto todas permiten interactuar/entrar (salvo si implementas PARED)
     }
 
     public Celda(Tipo tipo, Object contenido) {
         this.tipo = tipo;
         this.contenido = contenido;
         this.accesible = true;
-
-        // Algunas celdas por defecto no son accesibles
-        if (tipo == Tipo.TRAMPA) {
-            this.accesible = false;
-        }
     }
 
     public Tipo getTipo() {
@@ -66,8 +56,19 @@ public class Celda {
         this.accesible = accesible;
     }
 
+    /**
+     * CORREGIDO: Ahora el jugador puede transitar o entrar a casillas
+     * con enemigos, objetos y trampas para interactuar con ellos.
+     */
     public boolean estaLibreParaMovimiento() {
-        return accesible && (tipo == Tipo.VACIA || tipo == Tipo.PUERTA || tipo == Tipo.SALIDA || tipo == Tipo.TRAMPA);
+        return accesible && (
+                tipo == Tipo.VACIA ||
+                        tipo == Tipo.PUERTA ||
+                        tipo == Tipo.SALIDA ||
+                        tipo == Tipo.TRAMPA ||
+                        tipo == Tipo.OBJETO ||
+                        tipo == Tipo.ENEMIGO
+        );
     }
 
     public void limpiar() {
