@@ -20,6 +20,10 @@ public class Enemigo {
     private int danoArma; // Daño adicional si tiene arma
     private int defensaArmadura; // Defensa adicional si tiene armadura
 
+    // Posición del enemigo dentro de la habitación
+    private int posicionX;
+    private int posicionY;
+
     public Enemigo(Tipo tipo) {
         this.tipo = tipo;
 
@@ -66,6 +70,8 @@ public class Enemigo {
         this.equipado = false;
         this.danoArma = 0;
         this.defensaArmadura = 0;
+        this.posicionX = -1;
+        this.posicionY = -1;
     }
 
     // Getters y Setters
@@ -99,6 +105,19 @@ public class Enemigo {
 
     public int getVelocidad() {
         return velocidad;
+    }
+
+    public int getPosicionX() {
+        return posicionX;
+    }
+
+    public int getPosicionY() {
+        return posicionY;
+    }
+
+    public void setPosicion(int posicionX, int posicionY) {
+        this.posicionX = posicionX;
+        this.posicionY = posicionY;
     }
 
     public boolean isEquipado() {
@@ -154,6 +173,7 @@ public class Enemigo {
     public String toString() {
         return nombre + " [Vida: " + vidaActual + "/" + vidaMax +
                 ", Ataque: " + getAtaque() + ", Defensa: " + getDefensa() +
-                ", Velocidad: " + velocidad + "]";
+                ", Velocidad: " + velocidad +
+                ", Posición: (" + posicionX + "," + posicionY + ")]";
     }
 }

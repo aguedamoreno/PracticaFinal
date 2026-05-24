@@ -76,6 +76,11 @@ public class Habitacion {
             Celda celda = getCelda(fila, columna);
             celda.setTipo(Celda.Tipo.ENEMIGO);
             celda.setContenido(enemigo);
+
+            // El enemigo también guarda internamente su posición.
+            if (enemigo instanceof Enemigo) {
+                ((Enemigo) enemigo).setPosicion(fila, columna);
+            }
         }
     }
 

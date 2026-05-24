@@ -80,7 +80,7 @@ public class VentanaJuego {
             }
             try {
                 // Ejecutamos la acción en el motor
-                motor.recogerObjetoAdyacente();
+                motor.recogerObjetoAdyacente(filaSeleccionada, columnaSeleccionada);
                 // Reseteamos selección tras el éxito
                 limpiarSeleccion();
                 actualizarVista();
