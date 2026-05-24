@@ -122,35 +122,45 @@ public class MotorJuego {
         }
 
         // --- CASO 3: MOVIMIENTO NORMAL ---
-        // Limpiar la celda antigua del jugador en la habitación
-        Celda celdaActual = habActual.getCelda(jugador.getPosicionX(), jugador.getPosicionY());
-        if (celdaActual != null) {
-            celdaActual.limpiar();
-        }
-
-        // Actualizar coordenadas internas del jugador
+        // Simplemente actualizamos las coordenadas internas del jugador.
+        // ¡YA NO cambiamos el tipo de la celda a VACIA ni metemos al jugador dentro!
         jugador.setPosicionX(nuevaFila);
         jugador.setPosicionY(nuevaColumna);
-
-        // Colocar al jugador en la nueva celda (usamos VACIA porque no tienes tipo JUGADOR en Celda.java)
-        celdaDestino.setTipo(Celda.Tipo.VACIA);
-        celdaDestino.setContenido(jugador);
 
         jugadorYaSeMovioEnEsteTurno = true;
         registro.registrar("El jugador se movió a la casilla (" + nuevaFila + ", " + nuevaColumna + ").");
     }
 
-    public void recogerObjetoAdyacente(int fila, int columna) throws JuegoException {
-        validarPartidaActiva();
-        validarAdyacente(fila, columna);
-        Celda celda = getHabitacionActual().getCelda(fila, columna);
-        if (celda.getTipo() != Celda.Tipo.OBJETO || !(celda.getContenido() instanceof Objeto)) {
-            throw new JuegoException("No hay objeto recogible en esa celda.");
+    public void recogerObjetoAdyacente() throws JuegoException {
+        if (derrota || victoria) {
+            throw new JuegoException("La partida ya ha finalizado.");
         }
-        Objeto objeto = (Objeto) celda.getContenido();
-        jugador.agregarObjetoInventario(objeto);
-        celda.limpiar();
-        registro.registrar("Jugador recoge " + objeto.getNombre() + ".");
+        if (jugadorYaActuoEnEsteTurno) {
+            throw new JuegoException("Ya has realizado una acción en este turno.");
+        }
+
+        // Miramos la celda exacta donde está parado el jugador actualmente
+        Habitacion habActual = getHabitacionActual();
+        Celda celdaActual = habActual.getCelda(jugador.getPosicionX(), jugador.getPosicionY());
+
+        // Validamos si realmente hay un objeto en el suelo bajo los pies del jugador
+        if (celdaActual == null || celdaActual.getTipo() != Celda.Tipo.OBJETO) {
+            throw new JuegoException("No hay ningún objeto en esta casilla para recoger.");
+        }
+
+        // Extraemos el objeto de la celda
+        Objeto objeto = (Objeto) celdaActual.getContenido();
+
+        // Lo guardamos en el inventario del jugador
+        jugador.getInventario().insertarUltimo(objeto);
+        registro.registrar("Has recogido el objeto: " + objeto.getNombre() + ".");
+
+        // ¡AQUÍ SÍ! Limpiamos la celda porque el objeto ya pasa a tu inventario
+        celdaActual.limpiar();
+
+        // Marcamos que el jugador gastó su acción y cerramos el turno
+        jugadorYaActuoEnEsteTurno = true;
+        finalizarTurnoCompleto();
     }
 
     public void usarObjeto(int indiceInventario) throws JuegoException {
@@ -319,7 +329,7 @@ public class MotorJuego {
         return -1;
     }
 
-    private void finalizarTurnoCompleto() {
+    public void finalizarTurnoCompleto() {
         // 1. Turno de los enemigos de la habitación actual
         procesarTurnoEnemigosLocales();
 
@@ -341,28 +351,40 @@ public class MotorJuego {
         jugadorYaActuoEnEsteTurno = false;
     }
 
+    public void finalizarTurnoVoluntariamente() {
+        registro.registrar("El jugador decide terminar su turno.");
+        finalizarTurnoCompleto();
+    }
+
     private void procesarTurnoEnemigosLocales() {
         Habitacion hab = getHabitacionActual();
-        // Recorrer la matriz de la habitación para encontrar enemigos vivientes
+
         for (int f = 0; f < hab.getFilas(); f++) {
             for (int c = 0; c < hab.getColumnas(); c++) {
                 Celda celda = hab.getCelda(f, c);
+
                 if (celda != null && celda.getTipo() == Celda.Tipo.ENEMIGO) {
                     Enemigo enemigo = (Enemigo) celda.getContenido();
+
                     if (enemigo != null && enemigo.estaVivo()) {
-                        // Aquí va la IA básica de tu enemigo:
-                        // Ej: Si está a rango 1 del jugador, le ataca. Si no, se acerca.
-                        // (Recordando que no cambian de habitación)
+                        // Calcular la distancia entre este enemigo y el jugador
+                        int distanciaFila = Math.abs(f - jugador.getPosicionX());
+                        int distanciaCol = Math.abs(c - jugador.getPosicionY());
+
+                        // Si el enemigo está en una casilla adyacente (rango 1 a su alrededor)
+                        if (distanciaFila <= 1 && distanciaCol <= 1) {
+
+                            // ¡LLAMADA DIRECTA! El jugador procesa el ataque del enemigo internamente
+                            int danoReal = jugador.recibirDano(enemigo.getAtaque());
+
+                            registro.registrar("¡El " + enemigo.getNombre() + " te ataca y te inflige " + danoReal + " puntos de daño!");
+                        }
                     }
                 }
             }
         }
     }
 
-    public void finalizarTurnoVoluntariamente() {
-        registro.registrar("El jugador decide terminar su turno.");
-        finalizarTurnoCompleto();
-    }
 
     public Habitacion getHabitacionActual() {
         return (Habitacion) mapa.obtenerDatosVertice(habitacionActualIndice);

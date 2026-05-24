@@ -236,6 +236,22 @@ public class Jugador {
         return x >= 0 && y >= 0;
     }
 
+    public int recibirDano(int ataqueEnemigo) {
+        // 1. Calculamos la mitigación: el daño real no puede ser menor que 0
+        int danoReal = Math.max(0, ataqueEnemigo - getDefensaTotal());
+
+        // 2. Restamos el daño real a la vida actual, asegurando que no baje de 0
+        this.vidaActual = Math.max(0, this.vidaActual - danoReal);
+
+        // 3. Si la vida llega a 0, actualizamos el estado del jugador a muerto
+        if (this.vidaActual == 0) {
+            this.vivo = false;
+        }
+
+        // Devolvemos el daño real para poder pintarlo en los registros de la interfaz
+        return danoReal;
+    }
+
     @Override
     public String toString() {
         return "Jugador [Vida: " + vidaActual + "/" + vidaMax +

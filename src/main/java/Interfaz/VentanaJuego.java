@@ -23,6 +23,7 @@ public class VentanaJuego {
     private Button atacarBtn;
     private Button usarBtn;
     private Button recogerBtn;
+    private Button pasarTurnoBtn;
 
     private MotorJuego motor;
 
@@ -63,6 +64,7 @@ public class VentanaJuego {
         atacarBtn = new Button("Atacar Enemigo");
         usarBtn = new Button("Usar Objeto Seleccionado");
         recogerBtn = new Button("Recoger Objeto");
+        pasarTurnoBtn = new Button("Pasar Turno");
     }
 
     /**
@@ -78,7 +80,7 @@ public class VentanaJuego {
             }
             try {
                 // Ejecutamos la acción en el motor
-                motor.recogerObjetoAdyacente(filaSeleccionada, columnaSeleccionada);
+                motor.recogerObjetoAdyacente();
                 // Reseteamos selección tras el éxito
                 limpiarSeleccion();
                 actualizarVista();
@@ -131,6 +133,21 @@ public class VentanaJuego {
                 mostrarError(ex.getMessage());
             }
         });
+
+        // ACCION DEL BOTÓN PASARTURNO
+        pasarTurnoBtn.setOnAction(e -> {
+            motor.finalizarTurnoVoluntariamente(); // Llama al motor para pasar de turno
+            actualizarVista();                     // Refresca el mapa, la vida y los turnos restantes
+            actualizarRegistro();                  // Muestra el texto en el panel de la derecha
+
+            // Opcional: limpiar la selección de casillas para el siguiente turno
+            filaSeleccionada = -1;
+            columnaSeleccionada = -1;
+            if (botonSeleccionadoAnterior != null) {
+                botonSeleccionadoAnterior.setStyle("");
+                botonSeleccionadoAnterior = null;
+            }
+        });
     }
 
     private void limpiarSeleccion() {
@@ -155,7 +172,7 @@ public class VentanaJuego {
 
         HBox panelInferiorBotones = new HBox(10);
         panelInferiorBotones.setPadding(new Insets(10));
-        panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn);
+        panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn, pasarTurnoBtn);
 
         VBox panelInferiorCompleto = new VBox(5);
         panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, areaRegistro);
