@@ -177,3 +177,4 @@ public class Enemigo {
                 ", Posición: (" + posicionX + "," + posicionY + ")]";
     }
 }
+

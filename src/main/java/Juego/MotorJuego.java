@@ -109,8 +109,9 @@ public class MotorJuego {
                 jugador.setPosicionY(0);
             }
 
-            // Al abrir una puerta se acaba el turno al instante
-            finalizarTurnoCompleto();
+            // Cruzar una puerta cuenta como movimiento, pero NO termina el turno automáticamente.
+            // El turno solo termina cuando el jugador pulsa "Pasar Turno".
+            jugadorYaSeMovioEnEsteTurno = true;
             return;
         }
 
@@ -121,7 +122,24 @@ public class MotorJuego {
             return;
         }
 
-        // --- CASO 3: MOVIMIENTO NORMAL ---
+        // --- CASO 3: LA CASILLA DESTINO ES UNA TRAMPA ---
+        // El jugador SÍ puede moverse a una trampa. Al pisarla, pierde vida
+        // y después la trampa desaparece de la habitación.
+        if (celdaDestino.getTipo() == Celda.Tipo.TRAMPA) {
+            jugador.setPosicionX(nuevaFila);
+            jugador.setPosicionY(nuevaColumna);
+
+            int danoTrampa = 10;
+            jugador.setVidaActual(jugador.getVidaActual() - danoTrampa);
+            celdaDestino.limpiar();
+
+            jugadorYaSeMovioEnEsteTurno = true;
+            registro.registrar("El jugador pisó una trampa en (" + nuevaFila + ", " + nuevaColumna + ") y perdió " + danoTrampa + " puntos de vida.");
+            comprobarDerrotaPorVida();
+            return;
+        }
+
+        // --- CASO 4: MOVIMIENTO NORMAL ---
         // Simplemente actualizamos las coordenadas internas del jugador.
         // ¡YA NO cambiamos el tipo de la celda a VACIA ni metemos al jugador dentro!
         jugador.setPosicionX(nuevaFila);
@@ -186,7 +204,7 @@ public class MotorJuego {
         celdaObjeto.limpiar();
 
         jugadorYaActuoEnEsteTurno = true;
-        finalizarTurnoCompleto();
+        registro.registrar("Acción realizada. Puedes terminar el turno con 'Pasar Turno'.");
     }
 
     public void usarObjeto(int indiceInventario) throws JuegoException {
@@ -218,7 +236,7 @@ public class MotorJuego {
         }
 
         jugadorYaActuoEnEsteTurno = true;
-        finalizarTurnoCompleto();
+        registro.registrar("Acción realizada. Puedes terminar el turno con 'Pasar Turno'.");
     }
 
     public void atacarAdyacente(int fila, int columna) throws JuegoException {
@@ -244,8 +262,10 @@ public class MotorJuego {
         jugadorYaActuoEnEsteTurno = true;
         registro.registrar("El jugador atacó al enemigo en (" + fila + ", " + columna + ").");
 
-        // Aunque el enemigo no muera, el ataque consume la acción del jugador y después juegan los enemigos.
-        finalizarTurnoCompleto();
+        // El ataque consume la acción del jugador, pero NO termina el turno automáticamente.
+        // Así se cumple la norma: como máximo 1 movimiento y 1 acción por turno.
+        // Los enemigos solo actúan cuando el jugador pulse "Pasar Turno".
+        registro.registrar("Acción realizada. Puedes terminar el turno con 'Pasar Turno'.");
     }
 
     public ListaSimplementeEnlazada<Posicion> getCeldasAlcanzables() {

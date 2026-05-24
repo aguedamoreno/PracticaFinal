@@ -107,7 +107,7 @@ public class Habitacion {
         if (esPosicionValida(fila, columna)) {
             Celda celda = getCelda(fila, columna);
             celda.setTipo(Celda.Tipo.TRAMPA);
-            celda.setAccesible(false); // Las trampas no son accesibles inicialmente
+            celda.setAccesible(true); // Las trampas SÍ son accesibles: el jugador puede pisarlas y se activan
         }
     }
 
