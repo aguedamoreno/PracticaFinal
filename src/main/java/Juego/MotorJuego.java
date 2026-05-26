@@ -552,6 +552,32 @@ public class MotorJuego {
     }
 
 
+    /**
+     * Restaura los datos generales de la partida cuando se carga desde JSON.
+     * No crea una partida nueva: solo coloca el motor en el mismo estado
+     * en el que estaba cuando se guardó.
+     */
+    public void aplicarEstadoPartida(int habitacionActualIndice, int turnosRestantes, boolean victoria, boolean derrota,
+                                     boolean jugadorYaSeMovioEnEsteTurno, boolean jugadorYaActuoEnEsteTurno) {
+        this.habitacionActualIndice = habitacionActualIndice;
+        this.turnosRestantes = turnosRestantes;
+        this.victoria = victoria;
+        this.derrota = derrota;
+        this.jugadorYaSeMovioEnEsteTurno = jugadorYaSeMovioEnEsteTurno;
+        this.jugadorYaActuoEnEsteTurno = jugadorYaActuoEnEsteTurno;
+
+        Habitacion habitacion = getHabitacionActual();
+        this.jugador.setHabitacionActualId(habitacion.getId());
+    }
+
+    public boolean isJugadorYaSeMovioEnEsteTurno() {
+        return jugadorYaSeMovioEnEsteTurno;
+    }
+
+    public boolean isJugadorYaActuoEnEsteTurno() {
+        return jugadorYaActuoEnEsteTurno;
+    }
+
     public Habitacion getHabitacionActual() {
         return (Habitacion) mapa.obtenerDatosVertice(habitacionActualIndice);
     }
