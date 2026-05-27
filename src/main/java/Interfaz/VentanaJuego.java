@@ -52,10 +52,10 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
     public VentanaJuego() {
         motor = MotorJuego.crearPartidaDemo(); // asigna o actualiza un valor necesario para el estado del programa
         persistenciaJson = new PersistenciaJson(); // crea un nuevo objeto para poder usarlo después
-        inicializarComponentes(); // ejecuta una llamada a un método para realizar una acción concreta
+        inicializarComponentes(); // ejecuta una llamada a un metodo para realizar una acción concreta
         configurarAccionesBotones(); // <- NUEVA LLAMADA
-        construirVentana(); // ejecuta una llamada a un método para realizar una acción concreta
-        actualizarVista(); // ejecuta una llamada a un método para realizar una acción concreta
+        construirVentana(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
     }
 
     /**
@@ -65,13 +65,13 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
         root = new BorderPane(); // crea un nuevo objeto para poder usarlo después
 
         gridMapa = new GridPane(); // crea un nuevo objeto para poder usarlo después
-        gridMapa.setHgap(2); // ejecuta una llamada a un método para realizar una acción concreta
-        gridMapa.setVgap(2); // ejecuta una llamada a un método para realizar una acción concreta
+        gridMapa.setHgap(2); // ejecuta una llamada a un metodo para realizar una acción concreta
+        gridMapa.setVgap(2); // ejecuta una llamada a un metodo para realizar una acción concreta
         gridMapa.setPadding(new Insets(10)); // crea un nuevo objeto para poder usarlo después
 
         areaRegistro = new TextArea(); // crea un nuevo objeto para poder usarlo después
-        areaRegistro.setEditable(false); // ejecuta una llamada a un método para realizar una acción concreta
-        areaRegistro.setPrefHeight(180); // ejecuta una llamada a un método para realizar una acción concreta
+        areaRegistro.setEditable(false); // ejecuta una llamada a un metodo para realizar una acción concreta
+        areaRegistro.setPrefHeight(180); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         vidaLabel = new Label(); // crea un nuevo objeto para poder usarlo después
         ataqueLabel = new Label(); // crea un nuevo objeto para poder usarlo después
@@ -79,7 +79,7 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
         turnosLabel = new Label(); // crea un nuevo objeto para poder usarlo después
 
         inventarioView = new ListView<>(); // crea un nuevo objeto para poder usarlo después
-        inventarioView.setPrefWidth(200); // ejecuta una llamada a un método para realizar una acción concreta
+        inventarioView.setPrefWidth(200); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         moverBtn = new Button("Mover a Selección"); // crea un nuevo objeto para poder usarlo después
         atacarBtn = new Button("Atacar Enemigo"); // crea un nuevo objeto para poder usarlo después
@@ -98,64 +98,64 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
         // ACCIÓN DEL BOTÓN RECOGER OBJETO
         recogerBtn.setOnAction(e -> {
             if (filaSeleccionada == -1 || columnaSeleccionada == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Primero debes seleccionar una casilla en el mapa."); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError("Primero debes seleccionar una casilla en el mapa."); // ejecuta una llamada a un metodo para realizar una acción concreta
                 return;
             }
             try { // intenta ejecutar código que puede producir una excepción
                 // Ejecutamos la acción en el motor
-                motor.recogerObjetoAdyacente(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un método para realizar una acción concreta
+                motor.recogerObjetoAdyacente(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un metodo para realizar una acción concreta
                 // Reseteamos selección tras el éxito
-                limpiarSeleccion(); // ejecuta una llamada a un método para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un método para realizar una acción concreta
+                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         // ACCIÓN DEL BOTÓN ATACAR
         atacarBtn.setOnAction(e -> {
             if (filaSeleccionada == -1 || columnaSeleccionada == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Primero debes seleccionar una casilla donde haya un enemigo."); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError("Primero debes seleccionar una casilla donde haya un enemigo."); // ejecuta una llamada a un metodo para realizar una acción concreta
                 return;
             }
             try { // intenta ejecutar código que puede producir una excepción
-                motor.atacarAdyacente(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un método para realizar una acción concreta
-                limpiarSeleccion(); // ejecuta una llamada a un método para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un método para realizar una acción concreta
+                motor.atacarAdyacente(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un metodo para realizar una acción concreta
+                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         // ACCIÓN DEL BOTÓN MOVER
         moverBtn.setOnAction(e -> {
             if (filaSeleccionada == -1 || columnaSeleccionada == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Primero debes seleccionar a qué casilla te quieres mover."); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError("Primero debes seleccionar a qué casilla te quieres mover."); // ejecuta una llamada a un metodo para realizar una acción concreta
                 return;
             }
             try { // intenta ejecutar código que puede producir una excepción
-                motor.moverJugador(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un método para realizar una acción concreta
-                limpiarSeleccion(); // ejecuta una llamada a un método para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un método para realizar una acción concreta
+                motor.moverJugador(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un metodo para realizar una acción concreta
+                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         // ACCIÓN DEL BOTÓN USAR OBJETO DEL INVENTARIO
         usarBtn.setOnAction(e -> {
             int indiceSeleccionado = inventarioView.getSelectionModel().getSelectedIndex(); // asigna o actualiza un valor necesario para el estado del programa
             if (indiceSeleccionado == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Debes seleccionar un objeto de la lista de tu inventario."); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError("Debes seleccionar un objeto de la lista de tu inventario."); // ejecuta una llamada a un metodo para realizar una acción concreta
                 return;
             }
             try { // intenta ejecutar código que puede producir una excepción
-                motor.usarObjeto(indiceSeleccionado); // ejecuta una llamada a un método para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un método para realizar una acción concreta
+                motor.usarObjeto(indiceSeleccionado); // ejecuta una llamada a un metodo para realizar una acción concreta
+                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un método para realizar una acción concreta
+                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         // ACCION DEL BOTÓN PASARTURNO
         pasarTurnoBtn.setOnAction(e -> {
@@ -167,36 +167,36 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
             filaSeleccionada = -1; // asigna o actualiza un valor necesario para el estado del programa
             columnaSeleccionada = -1; // asigna o actualiza un valor necesario para el estado del programa
             if (botonSeleccionadoAnterior != null) { // comprueba una condición para decidir qué camino sigue el programa
-                botonSeleccionadoAnterior.setStyle(""); // ejecuta una llamada a un método para realizar una acción concreta
+                botonSeleccionadoAnterior.setStyle(""); // ejecuta una llamada a un metodo para realizar una acción concreta
                 botonSeleccionadoAnterior = null; // asigna o actualiza un valor necesario para el estado del programa
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         // ACCIÓN DEL BOTÓN GUARDAR PARTIDA
         guardarBtn.setOnAction(e -> {
             try { // intenta ejecutar código que puede producir una excepción
-                persistenciaJson.guardarEstado(motor, RUTA_GUARDADO); // ejecuta una llamada a un método para realizar una acción concreta
-                actualizarRegistro(); // ejecuta una llamada a un método para realizar una acción concreta
-                mostrarMensajeInformativo("Partida guardada", "La partida se ha guardado en el archivo " + RUTA_GUARDADO + "."); // ejecuta una llamada a un método para realizar una acción concreta
+                persistenciaJson.guardarEstado(motor, RUTA_GUARDADO); // ejecuta una llamada a un metodo para realizar una acción concreta
+                actualizarRegistro(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarMensajeInformativo("Partida guardada", "La partida se ha guardado en el archivo " + RUTA_GUARDADO + "."); // ejecuta una llamada a un metodo para realizar una acción concreta
             } catch (Exception ex) {
-                ex.printStackTrace(); // ejecuta una llamada a un método para realizar una acción concreta
-                mostrarError("No se ha podido guardar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage()); // ejecuta una llamada a un método para realizar una acción concreta
+                ex.printStackTrace(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarError("No se ha podido guardar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         // ACCIÓN DEL BOTÓN CARGAR PARTIDA
         cargarBtn.setOnAction(e -> {
             try { // intenta ejecutar código que puede producir una excepción
                 motor = persistenciaJson.cargarEstado(RUTA_GUARDADO); // asigna o actualiza un valor necesario para el estado del programa
-                limpiarSeleccion(); // ejecuta una llamada a un método para realizar una acción concreta
-                activarControles(); // ejecuta una llamada a un método para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un método para realizar una acción concreta
-                mostrarMensajeInformativo("Partida cargada", "La partida se ha cargado desde el archivo " + RUTA_GUARDADO + "."); // ejecuta una llamada a un método para realizar una acción concreta
+                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                activarControles(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarMensajeInformativo("Partida cargada", "La partida se ha cargado desde el archivo " + RUTA_GUARDADO + "."); // ejecuta una llamada a un metodo para realizar una acción concreta
             } catch (Exception ex) {
-                ex.printStackTrace(); // ejecuta una llamada a un método para realizar una acción concreta
-                mostrarError("No se ha podido cargar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage()); // ejecuta una llamada a un método para realizar una acción concreta
+                ex.printStackTrace(); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarError("No se ha podido cargar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
             }
-        }); // ejecuta una llamada a un método para realizar una acción concreta
+        }); // ejecuta una llamada a un metodo para realizar una acción concreta
     }
 
     /**
@@ -223,36 +223,36 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
                 new Label("--- INVENTARIO ---"),
                 inventarioView,
                 usarBtn
-        ); // ejecuta una llamada a un método para realizar una acción concreta
+        ); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         HBox panelInferiorBotones = new HBox(10); // crea un nuevo objeto para poder usarlo después
         panelInferiorBotones.setPadding(new Insets(10)); // crea un nuevo objeto para poder usarlo después
-        panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn, pasarTurnoBtn, guardarBtn, cargarBtn); // ejecuta una llamada a un método para realizar una acción concreta
+        panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn, pasarTurnoBtn, guardarBtn, cargarBtn); // ejecuta una llamada a un metodo para realizar una acción concreta
 
         VBox panelInferiorCompleto = new VBox(5); // crea un nuevo objeto para poder usarlo después
-        panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, areaRegistro); // ejecuta una llamada a un método para realizar una acción concreta
+        panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, areaRegistro); // ejecuta una llamada a un metodo para realizar una acción concreta
 
-        root.setCenter(gridMapa); // ejecuta una llamada a un método para realizar una acción concreta
-        root.setRight(panelDerecho); // ejecuta una llamada a un método para realizar una acción concreta
-        root.setBottom(panelInferiorCompleto); // ejecuta una llamada a un método para realizar una acción concreta
+        root.setCenter(gridMapa); // ejecuta una llamada a un metodo para realizar una acción concreta
+        root.setRight(panelDerecho); // ejecuta una llamada a un metodo para realizar una acción concreta
+        root.setBottom(panelInferiorCompleto); // ejecuta una llamada a un metodo para realizar una acción concreta
     }
 
     /**
      * Refresca toda la pantalla después de cualquier acción
      */
     public void actualizarVista() {
-        actualizarMapa(); // ejecuta una llamada a un método para realizar una acción concreta
-        actualizarJugador(); // ejecuta una llamada a un método para realizar una acción concreta
-        actualizarInventario(); // ejecuta una llamada a un método para realizar una acción concreta
-        actualizarRegistro(); // ejecuta una llamada a un método para realizar una acción concreta
-        verificarFinPartida(); // ejecuta una llamada a un método para realizar una acción concreta
+        actualizarMapa(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        actualizarJugador(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        actualizarInventario(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        actualizarRegistro(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        verificarFinPartida(); // ejecuta una llamada a un metodo para realizar una acción concreta
     }
 
     /**
      * Reconstruye el mapa visual de botones a partir del estado actual de la habitación
      */
     private void actualizarMapa() {
-        gridMapa.getChildren().clear(); // ejecuta una llamada a un método para realizar una acción concreta
+        gridMapa.getChildren().clear(); // ejecuta una llamada a un metodo para realizar una acción concreta
         Habitacion hab = motor.getHabitacionActual(); // asigna o actualiza un valor necesario para el estado del programa
         Jugador jugador = motor.getJugador(); // asigna o actualiza un valor necesario para el estado del programa
 
@@ -260,36 +260,36 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
             for (int j = 0; j < hab.getColumnas(); j++) { // bucle que repite instrucciones recorriendo elementos o posiciones
                 Celda celda = hab.getCelda(i, j); // asigna o actualiza un valor necesario para el estado del programa
                 Button btnCelda = new Button(); // crea un nuevo objeto para poder usarlo después
-                btnCelda.setPrefSize(65, 65); // ejecuta una llamada a un método para realizar una acción concreta
+                btnCelda.setPrefSize(65, 65); // ejecuta una llamada a un metodo para realizar una acción concreta
 
                 // Estilos visuales según el tipo de contenido
                 if (i == jugador.getPosicionX() && j == jugador.getPosicionY()) { // comprueba una condición para decidir qué camino sigue el programa
-                    btnCelda.setText("J"); // Jugador
-                    btnCelda.setStyle("-fx-background-color: #87CEEB; -fx-font-weight: bold;"); // ejecuta una llamada a un método para realizar una acción concreta.
+                    btnCelda.setText("🧍️"); // Jugador
+                    btnCelda.setStyle("-fx-background-color: #87CEEB; -fx-font-weight: bold;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
                 } else {
                     switch (celda.getTipo()) {
                         case VACIA:
-                            btnCelda.setText(""); // ejecuta una llamada a un método para realizar una acción concreta.
+                            btnCelda.setText(""); // ejecuta una llamada a un metodo para realizar una acción concreta.
                             break; // controla el flujo del bucle actual.
                         case OBJETO:
-                            btnCelda.setText("O"); // ejecuta una llamada a un método para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #FFE4B5;"); // ejecuta una llamada a un método para realizar una acción concreta.
+                            btnCelda.setText("💎"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                            btnCelda.setStyle("-fx-background-color: #FFFACD;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
                             break; // controla el flujo del bucle actual.
                         case ENEMIGO:
-                            btnCelda.setText("E"); // ejecuta una llamada a un método para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #FFB6C1;"); // ejecuta una llamada a un método para realizar una acción concreta.
+                            btnCelda.setText("👹"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                            btnCelda.setStyle("-fx-background-color: #FF6347;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
                             break; // controla el flujo del bucle actual.
                         case TRAMPA:
-                            btnCelda.setText("T"); // ejecuta una llamada a un método para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #D3D3D3;"); // ejecuta una llamada a un método para realizar una acción concreta.
+                            btnCelda.setText("🕳️"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                            btnCelda.setStyle("-fx-background-color: #DDA0DD;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
                             break; // controla el flujo del bucle actual.
                         case PUERTA:
-                            btnCelda.setText("P"); // ejecuta una llamada a un método para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #98FB98;"); // ejecuta una llamada a un método para realizar una acción concreta.
+                            btnCelda.setText("🚪"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                            btnCelda.setStyle("-fx-background-color: #98FB98;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
                             break; // controla el flujo del bucle actual.
                         case SALIDA:
-                            btnCelda.setText("S"); // ejecuta una llamada a un método para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #GOLD;"); // ejecuta una llamada a un método para realizar una acción concreta.
+                            btnCelda.setText("🏁"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                            btnCelda.setStyle("-fx-background-color: #DB7093;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
                             break; // controla el flujo del bucle actual.
                     }
                 }
@@ -300,7 +300,7 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
                 btnCelda.setOnAction(e -> {
                     // Si ya había un botón seleccionado antes, le quitamos el borde rojo
                     if (botonSeleccionadoAnterior != null) { // comprueba una condición para decidir qué camino sigue el programa.
-                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: red; -fx-border-width: 2px;", "")); // ejecuta una llamada a un método para realizar una acción concreta.
+                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: red; -fx-border-width: 2px;", "")); // ejecuta una llamada a un metodo para realizar una acción concreta.
                     }
 
                     // Guardamos la nueva posición seleccionada
@@ -309,8 +309,8 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
                     botonSeleccionadoAnterior = btnCelda; // asigna o actualiza un valor necesario para el estado del programa.
 
                     // Le ponemos un borde rojo llamativo al botón clicado para que sepamos cuál es
-                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: red; -fx-border-width: 2px;"); // ejecuta una llamada a un método para realizar una acción concreta.
-                }); // ejecuta una llamada a un método para realizar una acción concreta.
+                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #0F172A; -fx-border-width: 2px;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                }); // ejecuta una llamada a un metodo para realizar una acción concreta.
 
                 gridMapa.add(btnCelda, j, i); // En GridPane se añade (columna, fila)
             }
@@ -322,11 +322,11 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
      */
     private void verificarFinPartida() {
         if (motor.isVictoria()) { // comprueba una condición para decidir qué camino sigue el programa.
-            mostrarMensajeInformativo("¡VICTORIA!", "¡Enhorabuena! Has logrado escapar de la mazmorra."); // ejecuta una llamada a un método para realizar una acción concreta.
-            desactivarControles(); // ejecuta una llamada a un método para realizar una acción concreta.
+            mostrarMensajeInformativo("¡VICTORIA!", "¡Enhorabuena! Has logrado escapar de la mazmorra."); // ejecuta una llamada a un metodo para realizar una acción concreta.
+            desactivarControles(); // ejecuta una llamada a un metodo para realizar una acción concreta.
         } else if (motor.isDerrota()) {
-            mostrarMensajeInformativo("GAME OVER", "Has sido derrotado. Inténtalo de nuevo."); // ejecuta una llamada a un método para realizar una acción concreta.
-            desactivarControles(); // ejecuta una llamada a un método para realizar una acción concreta.
+            mostrarMensajeInformativo("GAME OVER", "Has sido derrotado. Inténtalo de nuevo."); // ejecuta una llamada a un metodo para realizar una acción concreta.
+            desactivarControles(); // ejecuta una llamada a un metodo para realizar una acción concreta.
         }
     }
 
@@ -334,44 +334,44 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
      * Bloquea los botones cuando ya no se puede jugar.
      */
     private void desactivarControles() {
-        gridMapa.setDisable(true); // ejecuta una llamada a un método para realizar una acción concreta.
-        moverBtn.setDisable(true); // ejecuta una llamada a un método para realizar una acción concreta.
-        atacarBtn.setDisable(true); // ejecuta una llamada a un método para realizar una acción concreta.
-        recogerBtn.setDisable(true); // ejecuta una llamada a un método para realizar una acción concreta.
-        usarBtn.setDisable(true); // ejecuta una llamada a un método para realizar una acción concreta.
-        pasarTurnoBtn.setDisable(true); // ejecuta una llamada a un método para realizar una acción concreta.
+        gridMapa.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        moverBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        atacarBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        recogerBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        usarBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        pasarTurnoBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
     }
 
     /**
      * Vuelve a habilitar los botones de acción.
      */
     private void activarControles() {
-        gridMapa.setDisable(false); // ejecuta una llamada a un método para realizar una acción concreta.
-        moverBtn.setDisable(false); // ejecuta una llamada a un método para realizar una acción concreta.
-        atacarBtn.setDisable(false); // ejecuta una llamada a un método para realizar una acción concreta.
-        recogerBtn.setDisable(false); // ejecuta una llamada a un método para realizar una acción concreta.
-        usarBtn.setDisable(false); // ejecuta una llamada a un método para realizar una acción concreta.
-        pasarTurnoBtn.setDisable(false); // ejecuta una llamada a un método para realizar una acción concreta.
+        gridMapa.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        moverBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        atacarBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        recogerBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        usarBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        pasarTurnoBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
     }
 
     /**
      * Muestra en pantalla las estadísticas actuales del jugador.
      */
     private void actualizarJugador() {
-        vidaLabel.setText("Vida: " + motor.getJugador().getVidaActual() + "/" + motor.getJugador().getVidaMax()); // ejecuta una llamada a un método para realizar una acción concreta.
-        ataqueLabel.setText("Ataque: " + motor.getJugador().getAtaqueTotal()); // ejecuta una llamada a un método para realizar una acción concreta.
-        defensaLabel.setText("Defensa: " + motor.getJugador().getDefensaTotal()); // ejecuta una llamada a un método para realizar una acción concreta.
-        turnosLabel.setText("Turnos restantes: " + motor.getTurnosRestantes()); // ejecuta una llamada a un método para realizar una acción concreta.
+        vidaLabel.setText("Vida: " + motor.getJugador().getVidaActual() + "/" + motor.getJugador().getVidaMax()); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        ataqueLabel.setText("Ataque: " + motor.getJugador().getAtaqueTotal()); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        defensaLabel.setText("Defensa: " + motor.getJugador().getDefensaTotal()); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        turnosLabel.setText("Turnos restantes: " + motor.getTurnosRestantes()); // ejecuta una llamada a un metodo para realizar una acción concreta.
     }
 
     /**
      * Actualiza la lista visible de objetos del inventario.
      */
     private void actualizarInventario() {
-        inventarioView.getItems().clear(); // ejecuta una llamada a un método para realizar una acción concreta.
+        inventarioView.getItems().clear(); // ejecuta una llamada a un metodo para realizar una acción concreta.
         for (int i = 0; i < motor.getJugador().getInventario().tamaño(); i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
             Objeto objeto = motor.getJugador().getInventario().obtener(i); // asigna o actualiza un valor necesario para el estado del programa.
-            inventarioView.getItems().add(objeto.getNombre() + " (" + objeto.getTipo() + ")"); // ejecuta una llamada a un método para realizar una acción concreta.
+            inventarioView.getItems().add(objeto.getNombre() + " (" + objeto.getTipo() + ")"); // ejecuta una llamada a un metodo para realizar una acción concreta.
         }
     }
 
@@ -379,7 +379,7 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
      * Muestra en el área de texto el historial de eventos de la partida.
      */
     private void actualizarRegistro() {
-        areaRegistro.setText(motor.getRegistro().comoTexto()); // ejecuta una llamada a un método para realizar una acción concreta.
+        areaRegistro.setText(motor.getRegistro().comoTexto()); // ejecuta una llamada a un metodo para realizar una acción concreta.
         areaRegistro.setScrollTop(Double.MAX_VALUE); // Auto-scroll hacia abajo
     }
 
@@ -388,10 +388,10 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
      */
     private void mostrarError(String mensaje) {
         Alert alert = new Alert(Alert.AlertType.ERROR); // crea un nuevo objeto para poder usarlo después.
-        alert.setTitle("Error en la Acción"); // ejecuta una llamada a un método para realizar una acción concreta.
-        alert.setHeaderText(null); // ejecuta una llamada a un método para realizar una acción concreta.
-        alert.setContentText(mensaje); // ejecuta una llamada a un método para realizar una acción concreta.
-        alert.showAndWait(); // ejecuta una llamada a un método para realizar una acción concreta.
+        alert.setTitle("Error en la Acción"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        alert.setHeaderText(null); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        alert.setContentText(mensaje); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        alert.showAndWait(); // ejecuta una llamada a un metodo para realizar una acción concreta.
     }
 
     /**
@@ -399,16 +399,16 @@ public class VentanaJuego { // declara una clase que agrupa datos y métodos rel
      */
     private void mostrarMensajeInformativo(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION); // crea un nuevo objeto para poder usarlo después.
-        alert.setTitle(titulo); // ejecuta una llamada a un método para realizar una acción concreta.
-        alert.setHeaderText(null); // ejecuta una llamada a un método para realizar una acción concreta.
-        alert.setContentText(mensaje); // ejecuta una llamada a un método para realizar una acción concreta.
-        alert.showAndWait(); // ejecuta una llamada a un método para realizar una acción concreta.
+        alert.setTitle(titulo); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        alert.setHeaderText(null); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        alert.setContentText(mensaje); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        alert.showAndWait(); // ejecuta una llamada a un metodo para realizar una acción concreta.
     }
 
     /**
      * Devuelve el contenedor raíz para insertarlo en la escena JavaFX.
      */
     public Parent getRoot() {
-        return root; // devuelve el resultado calculado por el método.
+        return root; // devuelve el resultado calculado por el metodo.
     }
 }

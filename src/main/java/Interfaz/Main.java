@@ -14,7 +14,7 @@ public class Main extends Application { // declara una clase que agrupa datos y 
 
     @Override
     /**
-     * Método principal de JavaFX que se ejecuta al abrir la aplicación.
+     * Metodo principal de JavaFX que se ejecuta al abrir la aplicación.
      */
     public void start(Stage stage) {
 
@@ -22,9 +22,9 @@ public class Main extends Application { // declara una clase que agrupa datos y 
 
         Scene escena = new Scene(ventana.getRoot(), 1200, 700); // crea un nuevo objeto para poder usarlo después.
 
-        stage.setTitle("Juego de Habitaciones"); // ejecuta una llamada a un método para realizar una acción concreta.
-        stage.setScene(escena); // ejecuta una llamada a un método para realizar una acción concreta.
-        stage.show(); // ejecuta una llamada a un método para realizar una acción concreta.
+        stage.setTitle("Juego de Habitaciones"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        stage.setScene(escena); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        stage.show(); // ejecuta una llamada a un metodo para realizar una acción concreta.
     }
 
     /**

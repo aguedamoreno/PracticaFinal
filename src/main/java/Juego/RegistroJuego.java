@@ -23,8 +23,7 @@ public class RegistroJuego {
         this.eventos = new ListaSimplementeEnlazada<>();
     }
 
-    /** añade un nuevo mensaje al registro.
-     * @param evento texto que describe lo que acaba de pasar en el juego
+    /** añade un nuevo mensaje al registro
      */
     public void registrar(String evento) {
 
@@ -34,7 +33,6 @@ public class RegistroJuego {
     }
 
     /** devuelve la lista completa de eventos.
-     * @return lista enlazada con todos los mensajes registrados
      */
     public ListaSimplementeEnlazada<String> getEventos() {
 
@@ -42,8 +40,7 @@ public class RegistroJuego {
         return eventos;
     }
 
-    /** Convierte todos los eventos en un único texto. Este método se usa normalmente para mostrar el historial
-     * @return texto con todos los eventos numerados
+    /** Convierte todos los eventos en un único texto. Este metodo se usa normalmente para mostrar el historial
      */
     public String comoTexto() {
 
