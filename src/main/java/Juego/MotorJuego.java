@@ -251,6 +251,176 @@ public class MotorJuego {
         // Guarda el movimiento en el registro
     }
 
+    /** Metodo que recoge un objeto cercano al jugador
+     */
+    public void recogerObjetoAdyacente() throws JuegoException {
+
+        validarPartidaActiva();
+        // Comprueba que la partida siga activa, porque si ya ganó o perdió, no permite recoger objetos
+
+        for (int df = -1; df <= 1; df++) {
+            // Recorre desplazamientos verticales: -1 = fila de arriba; 0 = misma fila; 1 = fila de abajo
+
+            for (int dc = -1; dc <= 1; dc++) {
+                // Recorre desplazamientos horizontales:-1 = izquierda; 0 = misma columna; 1 = derecha
+
+                int fila = jugador.getPosicionX() + df;
+                // Calcula la fila real que se quiere comprobar.
+
+                int columna = jugador.getPosicionY() + dc;
+                // Calcula la columna real que se quiere comprobar.
+
+                if (getHabitacionActual().esPosicionValida(fila, columna)) {
+                    // Comprueba que la posición exista dentro de la habitación, y evita salirse del mapa
+
+                    Celda celda = getHabitacionActual().getCelda(fila, columna);
+                    // Obtiene la celda de esa posición
+
+                    if (celda != null && celda.getTipo() == Celda.Tipo.OBJETO) {
+                        // Comprueba: que la celda exista, y que sea una celda de tipo objeto
+
+                        recogerObjetoAdyacente(fila, columna);
+                        // Llama al otro metodo que realmente recoge el objeto: lo mete al inventario, limpia la celda, registra el evento
+
+                        return;
+                        // Termina el metodo inmediatamente y solo recoge un objeto
+                    }
+                }
+            }
+        }
+        throw new JuegoException("No hay ningún objeto ni en tu casilla ni en las casillas de alrededor.");
+    }
+
+    /** Metodo que permite al jugador recoger un objeto que esté en su misma casilla
+    */
+    public void recogerObjetoAdyacente(int fila, int columna) throws JuegoException {
+
+        // Comprueba que la partida sigue activa y no ha terminado
+        validarPartidaActiva();
+
+        // Comprueba si el jugador ya ha realizado una acción en este turno, esto evita que haga varias acciones seguidas
+        if (jugadorYaActuoEnEsteTurno) {
+
+            // Lanza una excepción indicando que el jugador ya actuó
+            throw new JuegoException("Ya has realizado una acción en este turno.");
+        }
+
+        // Comprueba que la posición indicada existe dentro de los límites de la habitación actual
+        if (!getHabitacionActual().esPosicionValida(fila, columna)) {
+
+            // Si la posición no existe, se lanza una excepción
+            throw new JuegoException("Posición fuera de la habitación.");
+        }
+
+        // Permitimos recoger en la casilla actual o en cualquiera de las 8 casillas que rodean al jugador
+
+        // Calcula la distancia entre la fila indicada y la fila del jugador
+        int distanciaFila = Math.abs(fila - jugador.getPosicionX());    // Se convierte el resultado en positivo
+
+        // Calcula la distancia entre la columna indicada y la columna del jugador
+        int distanciaColumna = Math.abs(columna - jugador.getPosicionY());
+
+        // Comprueba si la casilla está demasiado lejos, y si alguna distancia es mayor que 1, ya no es adyacente
+        if (distanciaFila > 1 || distanciaColumna > 1) {
+            // Lanza una excepción indicando que el objeto no está cerca
+            throw new JuegoException("Solo puedes recoger objetos de tu casilla o de las casillas de alrededor.");
+        }
+
+        // Guarda la habitación actual en una variable
+        Habitacion habActual = getHabitacionActual();
+
+        // Obtiene la celda concreta donde debería estar el objeto
+        Celda celdaObjeto = habActual.getCelda(fila, columna);
+
+        // Comprueba varias cosas: que la celda exista, que sea de tipo Objeto, y que el contenido realmente sea un Objeto
+        if (celdaObjeto == null || celdaObjeto.getTipo() != Celda.Tipo.OBJETO || !(celdaObjeto.getContenido() instanceof Objeto)) {
+
+            // Si no hay un objeto válido, lanza excepción
+            throw new JuegoException("No hay ningún objeto en esa casilla para recoger.");
+        }
+
+        // Convierte el contenido de la celda en un Objeto
+        Objeto objeto = (Objeto) celdaObjeto.getContenido();
+
+        // Añade el objeto al final del inventario del jugador
+        jugador.getInventario().insertarUltimo(objeto);
+
+        // Registra en el historial del juego qué objeto se ha recogido
+        registro.registrar("Has recogido el objeto: " + objeto.getNombre() + ".");
+
+        // Limpia la celda para eliminar el objeto del mapa
+        celdaObjeto.limpiar();
+
+        // Marca que el jugador ya ha realizado una acción este turno
+        jugadorYaActuoEnEsteTurno = true;
+
+        // Registra un mensaje indicando que puede finalizar el turno
+        registro.registrar("Acción realizada. Puedes terminar el turno con 'Pasar Turno'.");
+    }
+
+    /** Metodo que permite usar o equipar un objeto del inventario
+     */
+    public void usarObjeto(int indiceInventario) throws JuegoException {
+        // Comprueba que la partida sigue activa
+        validarPartidaActiva();
+        // Obtiene el objeto almacenado en la posición indicada del inventario
+        Objeto objeto = jugador.getInventario().obtener(indiceInventario);
+
+        // Comprueba que realmente exista un objeto en esa posición
+        if (objeto == null) {
+            // Si no existe, lanza excepción
+            throw new JuegoException("Objeto de inventario no valido.");
+        }
+
+        // Comprueba si el jugador ya realizó una acción en este turno
+        if (jugadorYaActuoEnEsteTurno) {
+            // Si ya actuó, no puede volver a hacerlo
+            throw new JuegoException("Ya has realizado una acción en este turno.");
+        }
+
+        // Comprueba si el objeto es una poción de vida
+        if (objeto.getTipo() == Objeto.Tipo.POCION_VIDA) {
+            // Aumenta la vida actual del jugador usando el valor de la poción
+            jugador.setVidaActual(jugador.getVidaActual() + objeto.getValor());
+
+            // Usa el objeto desde el inventario, y dependiendo del tipo, puede eliminarse o reducir usos
+            if (!jugador.usarObjetoInventario(indiceInventario)) {
+                // Si no puede usarse, lanza excepción
+                throw new JuegoException("El objeto no puede usarse.");
+            }
+
+            // Registra en el historial el uso del objeto
+            registro.registrar("Jugador usa " + objeto.getNombre() + ".");
+
+            // Comprueba si el objeto es equipable
+        } else if (objeto.isEquipable()) {
+            // Intenta equipar el objeto desde el inventario
+            if (!jugador.equipoObjetoInventario(indiceInventario)) {
+                // Si no se puede equipar, lanza excepción
+                throw new JuegoException("No se puede equipar el objeto.");
+            }
+
+            // Registra en el historial que el jugador ha equipado el objeto
+            registro.registrar("Jugador equipa " + objeto.getNombre() + ".");
+
+        } else {
+            // Para cualquier otro objeto, intenta usarlo normal
+            if (!jugador.usarObjetoInventario(indiceInventario)) {
+                // Si falla el uso, lanza excepción
+                throw new JuegoException("El objeto no puede usarse.");
+            }
+
+            // Registra el uso del objeto
+            registro.registrar("Jugador usa " + objeto.getNombre() + ".");
+        }
+
+        // Marca que el jugador ya ha realizado una acción en este turno
+        jugadorYaActuoEnEsteTurno = true;
+
+        // Registra un mensaje indicando que puede terminar el turno
+        registro.registrar("Acción realizada. Puedes terminar el turno con 'Pasar Turno'.");
+    }
+
     /** Metodo que hace que el jugador ataque a un enemigo que esté en una casilla adyacente
      */
     public void atacarAdyacente(int fila, int columna) throws JuegoException {
