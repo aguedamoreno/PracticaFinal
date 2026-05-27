@@ -47,13 +47,6 @@ public class VentanaJuego {
     private int columnaSeleccionada = -1; // coordenada Y de la celda del mapa que el jugador ha pinchado
     private Button botonSeleccionadoAnterior = null; // guarda la referencia del último botón clickeado para poder quitarle el borde de selección
 
-    // --- ESTILOS VISUALES DE LA INTERFAZ ---
-    private static final String COLOR_FONDO = "#0B1120"; // color principal del fondo oscuro de la mazmorra
-    private static final String COLOR_PANEL = "#111827"; // color de los paneles laterales e inferiores
-    private static final String COLOR_PANEL_CLARO = "#1F2937"; // color usado para tarjetas y bloques interiores
-    private static final String COLOR_ACENTO = "#F97316"; // naranja usado para títulos, brillos y detalles
-    private static final String COLOR_TEXTO = "#F8FAFC"; // color claro para los textos principales
-
     /** Constructor: Inicia la partida demo y monta los elementos visuales en la pantalla
      */
     public VentanaJuego() {
@@ -69,67 +62,42 @@ public class VentanaJuego {
      */
     private void inicializarComponentes() {
         root = new BorderPane();
-        root.setStyle("-fx-background-color: radial-gradient(center 50% 20%, radius 80%, #1E293B, " + COLOR_FONDO + ");");
+        root.setStyle("-fx-background-color: linear-gradient(to bottom, #1E293B, #0F172A);");
 
         gridMapa = new GridPane();
-        gridMapa.setHgap(5); // separación horizontal entre las casillas del mapa
-        gridMapa.setVgap(5); // separación vertical entre las casillas del mapa
-        gridMapa.setPadding(new Insets(20));
+        gridMapa.setHgap(2); // separación horizontal entre las casillas del mapa
+        gridMapa.setVgap(2); // separación vertical entre las casillas del mapa
+        gridMapa.setPadding(new Insets(15));
         gridMapa.setAlignment(Pos.CENTER);
-        gridMapa.setStyle(
-                "-fx-background-color: linear-gradient(to bottom right, #334155, #111827);" +
-                        "-fx-background-radius: 22;" +
-                        "-fx-border-color: #F97316;" +
-                        "-fx-border-width: 2;" +
-                        "-fx-border-radius: 22;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 22, 0.25, 0, 8);"
-        );
+        gridMapa.setStyle("-fx-background-color: #334155; -fx-background-radius: 14; -fx-border-color: #64748B; -fx-border-width: 2; -fx-border-radius: 14;");
 
         areaRegistro = new TextArea();
         areaRegistro.setEditable(false); // evita que el jugador pueda modificar el texto de las acciones y movimientos
-        areaRegistro.setPrefHeight(185);
-        areaRegistro.setWrapText(true);
-        areaRegistro.setStyle(
-                "-fx-control-inner-background: #020617;" +
-                        "-fx-text-fill: #E2E8F0;" +
-                        "-fx-font-size: 12px;" +
-                        "-fx-font-family: 'Consolas';" +
-                        "-fx-border-color: #475569;" +
-                        "-fx-border-radius: 14;" +
-                        "-fx-background-radius: 14;" +
-                        "-fx-effect: innershadow(gaussian, rgba(249,115,22,0.18), 12, 0.3, 0, 0);"
-        );
+        areaRegistro.setPrefHeight(180);
+        areaRegistro.setStyle("-fx-control-inner-background: #0F172A; -fx-text-fill: #E2E8F0; -fx-font-size: 12px; -fx-border-color: #64748B; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         vidaLabel = new Label();
         ataqueLabel = new Label();
         defensaLabel = new Label();
         turnosLabel = new Label();
 
-        vidaLabel.setStyle("-fx-text-fill: " + COLOR_TEXTO + "; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 6 10 6 10; -fx-background-color: rgba(15,23,42,0.75); -fx-background-radius: 10;");
-        ataqueLabel.setStyle("-fx-text-fill: " + COLOR_TEXTO + "; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 6 10 6 10; -fx-background-color: rgba(15,23,42,0.75); -fx-background-radius: 10;");
-        defensaLabel.setStyle("-fx-text-fill: " + COLOR_TEXTO + "; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 6 10 6 10; -fx-background-color: rgba(15,23,42,0.75); -fx-background-radius: 10;");
-        turnosLabel.setStyle("-fx-text-fill: " + COLOR_TEXTO + "; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 6 10 6 10; -fx-background-color: rgba(15,23,42,0.75); -fx-background-radius: 10;");
+        vidaLabel.setStyle("-fx-text-fill: #F8FAFC; -fx-font-size: 14px; -fx-font-weight: bold;");
+        ataqueLabel.setStyle("-fx-text-fill: #F8FAFC; -fx-font-size: 14px; -fx-font-weight: bold;");
+        defensaLabel.setStyle("-fx-text-fill: #F8FAFC; -fx-font-size: 14px; -fx-font-weight: bold;");
+        turnosLabel.setStyle("-fx-text-fill: #F8FAFC; -fx-font-size: 14px; -fx-font-weight: bold;");
 
         inventarioView = new ListView<>();
-        inventarioView.setPrefWidth(230);
-        inventarioView.setPrefHeight(210);
-        inventarioView.setStyle(
-                "-fx-control-inner-background: #020617;" +
-                        "-fx-text-fill: #F8FAFC;" +
-                        "-fx-background-radius: 14;" +
-                        "-fx-border-color: #475569;" +
-                        "-fx-border-radius: 14;" +
-                        "-fx-padding: 4;"
-        );
+        inventarioView.setPrefWidth(210);
+        inventarioView.setStyle("-fx-control-inner-background: #F8FAFC; -fx-background-radius: 8; -fx-border-color: #CBD5E1; -fx-border-radius: 8;");
 
         // textos que verá el jugador en su panel de acciones
-        moverBtn = new Button("🧭 Mover");
-        atacarBtn = new Button("⚔ Atacar");
-        usarBtn = new Button("✨ Usar Objeto");
-        recogerBtn = new Button("💎 Recoger");
-        pasarTurnoBtn = new Button("⏳ Pasar Turno");
-        guardarBtn = new Button("💾 Guardar");
-        cargarBtn = new Button("📂 Cargar");
+        moverBtn = new Button("Mover a Selección");
+        atacarBtn = new Button("Atacar Enemigo");
+        usarBtn = new Button("Usar Objeto Seleccionado");
+        recogerBtn = new Button("Recoger Objeto");
+        pasarTurnoBtn = new Button("Pasar Turno");
+        guardarBtn = new Button("Guardar Partida");
+        cargarBtn = new Button("Cargar Partida");
 
         aplicarEstiloBoton(moverBtn);
         aplicarEstiloBoton(atacarBtn);
@@ -143,34 +111,7 @@ public class VentanaJuego {
     /** Aplica un estilo visual común a los botones para que la interfaz tenga un aspecto más uniforme
      */
     private void aplicarEstiloBoton(Button boton) {
-        String estiloNormal =
-                "-fx-background-color: linear-gradient(to bottom, #F97316, #C2410C);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-font-size: 12px;" +
-                        "-fx-background-radius: 14;" +
-                        "-fx-border-color: #FDBA74;" +
-                        "-fx-border-radius: 14;" +
-                        "-fx-padding: 9 14 9 14;" +
-                        "-fx-cursor: hand;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 10, 0.2, 0, 3);";
-
-        String estiloHover =
-                "-fx-background-color: linear-gradient(to bottom, #FDBA74, #F97316);" +
-                        "-fx-text-fill: #111827;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-font-size: 12px;" +
-                        "-fx-background-radius: 14;" +
-                        "-fx-border-color: #FFEDD5;" +
-                        "-fx-border-radius: 14;" +
-                        "-fx-padding: 9 14 9 14;" +
-                        "-fx-cursor: hand;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(249,115,22,0.65), 14, 0.35, 0, 4);";
-
-        boton.setMinWidth(125);
-        boton.setStyle(estiloNormal);
-        boton.setOnMouseEntered(e -> boton.setStyle(estiloHover));
-        boton.setOnMouseExited(e -> boton.setStyle(estiloNormal));
+        boton.setStyle("-fx-background-color: #475569; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 12 8 12;");
     }
 
     /** Vincula los botones de la interfaz con las reglas lógicas del motor del juego
@@ -298,86 +239,39 @@ public class VentanaJuego {
      */
     private void construirVentana() {
         // panel lateral derecho: Información de estadísticas del jugador e inventario de equipo
-        VBox panelDerecho = new VBox(12);
-        panelDerecho.setPadding(new Insets(18));
-        panelDerecho.setPrefWidth(270);
-        panelDerecho.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, " + COLOR_PANEL_CLARO + ", " + COLOR_PANEL + ");" +
-                        "-fx-border-color: #475569;" +
-                        "-fx-border-width: 0 0 0 2;"
-        );
+        VBox panelDerecho = new VBox(10);
+        panelDerecho.setPadding(new Insets(15));
+        panelDerecho.setStyle("-fx-background-color: #1E293B; -fx-border-color: #64748B; -fx-border-width: 0 0 0 2;");
 
-        Label tituloJuego = new Label("🏰 DUNGEON CRAWLER");
-        tituloJuego.setStyle("-fx-text-fill: #FFEDD5; -fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;");
-
-        Label subtituloJuego = new Label("Explora, lucha y escapa");
-        subtituloJuego.setStyle("-fx-text-fill: #CBD5E1; -fx-font-size: 11px; -fx-padding: 0 0 12 0;");
-
-        Label tituloEstado = new Label("⚔ ESTADO DEL HÉROE");
+        Label tituloEstado = new Label("⚔ ESTADO JUGADOR");
         tituloEstado.setStyle("-fx-text-fill: #FDBA74; -fx-font-size: 15px; -fx-font-weight: bold;");
-
-        VBox tarjetaEstado = new VBox(8);
-        tarjetaEstado.setPadding(new Insets(12));
-        tarjetaEstado.setStyle("-fx-background-color: rgba(15,23,42,0.78); -fx-background-radius: 16; -fx-border-color: #334155; -fx-border-radius: 16;");
-        tarjetaEstado.getChildren().addAll(vidaLabel, ataqueLabel, defensaLabel, turnosLabel);
 
         Label tituloInventario = new Label("🎒 INVENTARIO");
         tituloInventario.setStyle("-fx-text-fill: #FDBA74; -fx-font-size: 15px; -fx-font-weight: bold;");
 
-        Label tituloLeyenda = new Label("🗺 LEYENDA");
-        tituloLeyenda.setStyle("-fx-text-fill: #FDBA74; -fx-font-size: 15px; -fx-font-weight: bold;");
-
-        Label leyenda = new Label("🤠 Jugador   👹 Enemigo\n💎 Objeto     🚪 Puerta\n💀 Trampa    🏁 Salida\n▢ Borde naranja: puedes moverte");
-        leyenda.setStyle("-fx-text-fill: #E2E8F0; -fx-font-size: 12px; -fx-padding: 10; -fx-background-color: rgba(15,23,42,0.78); -fx-background-radius: 14; -fx-border-color: #334155; -fx-border-radius: 14;");
-
         panelDerecho.getChildren().addAll(
-                tituloJuego,
-                subtituloJuego,
                 tituloEstado,
-                tarjetaEstado,
+                vidaLabel, ataqueLabel, defensaLabel, turnosLabel,
                 tituloInventario,
                 inventarioView,
-                usarBtn,
-                tituloLeyenda,
-                leyenda
+                usarBtn
         );
 
         //panel inferior: botones de comandos y acciones
         HBox panelInferiorBotones = new HBox(10);
         panelInferiorBotones.setPadding(new Insets(10));
         panelInferiorBotones.setAlignment(Pos.CENTER);
-        panelInferiorBotones.setStyle("-fx-background-color: transparent;");
+        panelInferiorBotones.setStyle("-fx-background-color: #1E293B;");
         panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn, pasarTurnoBtn, guardarBtn, cargarBtn);
 
         // une los botones y el cuadro de texto en la zona inferior de la pantalla
         VBox panelInferiorCompleto = new VBox(5);
-        panelInferiorCompleto.setPadding(new Insets(12));
-        panelInferiorCompleto.setStyle(
-                "-fx-background-color: linear-gradient(to right, " + COLOR_PANEL + ", #020617);" +
-                        "-fx-border-color: #475569;" +
-                        "-fx-border-width: 2 0 0 0;"
-        );
-
-        Label tituloRegistro = new Label("📜 Registro de la aventura");
-        tituloRegistro.setStyle("-fx-text-fill: #FDBA74; -fx-font-size: 14px; -fx-font-weight: bold;");
-
-        panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, tituloRegistro, areaRegistro);
+        panelInferiorCompleto.setPadding(new Insets(8));
+        panelInferiorCompleto.setStyle("-fx-background-color: #1E293B; -fx-border-color: #64748B; -fx-border-width: 2 0 0 0;");
+        panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, areaRegistro);
 
         // distribución final en el contenedor raíz
-        VBox zonaCentral = new VBox(14);
-        zonaCentral.setAlignment(Pos.CENTER);
-        zonaCentral.setPadding(new Insets(22));
-        zonaCentral.setStyle("-fx-background-color: transparent;");
-
-        Label tituloMapa = new Label("✨ Habitación actual: mazmorra activa");
-        tituloMapa.setStyle("-fx-text-fill: #FFEDD5; -fx-font-size: 20px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(249,115,22,0.55), 12, 0.4, 0, 2);");
-
-        Label ayudaMapa = new Label("Selecciona una casilla iluminada para moverte o una casilla cercana para interactuar");
-        ayudaMapa.setStyle("-fx-text-fill: #CBD5E1; -fx-font-size: 12px;");
-
-        zonaCentral.getChildren().addAll(tituloMapa, ayudaMapa, gridMapa);
-
-        root.setCenter(zonaCentral); // el mapa de la mazmorra ocupa el centro de la pantalla
+        root.setCenter(gridMapa); // el mapa de la mazmorra ocupa el centro de la pantalla
         root.setRight(panelDerecho); // las estadísticas a la derecha
         root.setBottom(panelInferiorCompleto); // el registro y los controles abajo
     }
@@ -404,13 +298,13 @@ public class VentanaJuego {
             for (int j = 0; j < hab.getColumnas(); j++) {
                 Celda celda = hab.getCelda(i, j);
                 Button btnCelda = new Button();
-                btnCelda.setPrefSize(68, 68); // define el tamaño cuadrado de cada casilla del mapa
-                btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #E2E8F0, #CBD5E1); -fx-background-radius: 14; -fx-border-color: #94A3B8; -fx-border-radius: 14; -fx-font-size: 22px; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 7, 0.2, 0, 2);");
+                btnCelda.setPrefSize(65, 65); // define el tamaño cuadrado de cada casilla del mapa
+                btnCelda.setStyle("-fx-background-color: #E2E8F0; -fx-background-radius: 8; -fx-border-color: #CBD5E1; -fx-border-radius: 8; -fx-font-size: 20px;");
 
                 // --- RENDERIZADO VISUAL SEGÚN EL CONTENIDO DE LA CELDA ---
                 if (i == jugador.getPosicionX() && j == jugador.getPosicionY()) {
                     btnCelda.setText("\uD83E\uDD20️"); // icono del jugador
-                    btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #7DD3FC, #0284C7); -fx-background-radius: 14; -fx-border-color: #E0F2FE; -fx-border-width: 2; -fx-border-radius: 14; -fx-font-size: 23px; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(56,189,248,0.65), 14, 0.35, 0, 0);");
+                    btnCelda.setStyle("-fx-background-color: #38BDF8; -fx-background-radius: 8; -fx-border-color: #E0F2FE; -fx-border-radius: 8; -fx-font-size: 20px; -fx-font-weight: bold;");
                 } else {
                     switch (celda.getTipo()) {
                         case VACIA:
@@ -418,23 +312,23 @@ public class VentanaJuego {
                             break;
                         case OBJETO:
                             btnCelda.setText("💎"); // tesoro, poción o equipamiento en el suelo
-                            btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #FEF3C7, #FBBF24); -fx-background-radius: 14; -fx-border-color: #FDE68A; -fx-border-width: 2; -fx-border-radius: 14; -fx-font-size: 22px; -fx-effect: dropshadow(gaussian, rgba(251,191,36,0.45), 10, 0.3, 0, 0);");
+                            btnCelda.setStyle("-fx-background-color: #FEF3C7; -fx-background-radius: 8; -fx-border-color: #FDE68A; -fx-border-radius: 8; -fx-font-size: 20px;");
                             break;
                         case ENEMIGO:
                             btnCelda.setText("👹"); // monstruo agresivo esperando combate
-                            btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #FCA5A5, #DC2626); -fx-background-radius: 14; -fx-border-color: #FEE2E2; -fx-border-width: 2; -fx-border-radius: 14; -fx-font-size: 22px; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.55), 12, 0.35, 0, 0);");
+                            btnCelda.setStyle("-fx-background-color: #FCA5A5; -fx-background-radius: 8; -fx-border-color: #EF4444; -fx-border-radius: 8; -fx-font-size: 20px;");
                             break;
                         case TRAMPA:
                             btnCelda.setText("\uD83D\uDC80"); // foso, pinchos o peligro oculto
-                            btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #C084FC, #7E22CE); -fx-background-radius: 14; -fx-border-color: #E9D5FF; -fx-border-width: 2; -fx-border-radius: 14; -fx-font-size: 22px; -fx-effect: dropshadow(gaussian, rgba(168,85,247,0.55), 12, 0.35, 0, 0);");
+                            btnCelda.setStyle("-fx-background-color: #C084FC; -fx-background-radius: 8; -fx-border-color: #A855F7; -fx-border-radius: 8; -fx-font-size: 20px;");
                             break;
                         case PUERTA:
                             btnCelda.setText("🚪"); // transición a una nueva zona o habitación de la mazmorra
-                            btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #BBF7D0, #16A34A); -fx-background-radius: 14; -fx-border-color: #DCFCE7; -fx-border-width: 2; -fx-border-radius: 14; -fx-font-size: 22px; -fx-effect: dropshadow(gaussian, rgba(34,197,94,0.5), 12, 0.35, 0, 0);");
+                            btnCelda.setStyle("-fx-background-color: #86EFAC; -fx-background-radius: 8; -fx-border-color: #22C55E; -fx-border-radius: 8; -fx-font-size: 20px;");
                             break;
                         case SALIDA:
                             btnCelda.setText("🏁"); // meta final para escapar y ganar el juego
-                            btnCelda.setStyle("-fx-background-color: linear-gradient(to bottom, #FBCFE8, #DB2777); -fx-background-radius: 14; -fx-border-color: #FCE7F3; -fx-border-width: 2; -fx-border-radius: 14; -fx-font-size: 22px; -fx-effect: dropshadow(gaussian, rgba(236,72,153,0.55), 12, 0.35, 0, 0);");
+                            btnCelda.setStyle("-fx-background-color: #F9A8D4; -fx-background-radius: 8; -fx-border-color: #EC4899; -fx-border-radius: 8; -fx-font-size: 20px;");
                             break;
                     }
                 }
@@ -442,7 +336,7 @@ public class VentanaJuego {
                 // Si la casilla es alcanzable para moverse, se marca solo con un borde naranja clarito.
                 if (!(i == jugador.getPosicionX() && j == jugador.getPosicionY())
                         && motor.esCeldaAlcanzableParaJugador(i, j)) {
-                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #FDBA74; -fx-border-width: 4px; -fx-border-radius: 14; -fx-effect: dropshadow(gaussian, rgba(253,186,116,0.65), 14, 0.4, 0, 0);");
+                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #FDBA74; -fx-border-width: 3px; -fx-border-radius: 8;");
                 }
 
                 // --- GESTIÓN DE CLICKS (SELECCIÓN TÁCTICA DE CASILLAS) ---
@@ -451,7 +345,7 @@ public class VentanaJuego {
                 btnCelda.setOnAction(e -> {
                     // si el jugador pincha una celda teniendo otra seleccionada, le quita el borde de selección a la anterior
                     if (botonSeleccionadoAnterior != null) {
-                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: #FFEDD5; -fx-border-width: 4px; -fx-border-radius: 14;", ""));
+                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: #0F172A; -fx-border-width: 3px; -fx-border-radius: 8;", ""));
                     }
 
                     // registra las coordenadas de la celda elegida como objetivo de la próxima acción
@@ -460,7 +354,7 @@ public class VentanaJuego {
                     botonSeleccionadoAnterior = btnCelda;
 
                     // pinta un contorno oscuro y marcado alrededor de la casilla seleccionada por el jugador
-                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #FFEDD5; -fx-border-width: 4px; -fx-border-radius: 14;");
+                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #0F172A; -fx-border-width: 3px; -fx-border-radius: 8;");
                 });
 
                 gridMapa.add(btnCelda, j, i); // coloca el botón en la cuadrícula visual de JavaFX
@@ -505,10 +399,10 @@ public class VentanaJuego {
     /** Modifica los textos informativos en el HUD con la vida, estadísticas y turnos del héroe
      */
     private void actualizarJugador() {
-        vidaLabel.setText("❤️ Vida: " + motor.getJugador().getVidaActual() + "/" + motor.getJugador().getVidaMax());
-        ataqueLabel.setText("⚔ Ataque: " + motor.getJugador().getAtaqueTotal());
-        defensaLabel.setText("🛡 Defensa: " + motor.getJugador().getDefensaTotal());
-        turnosLabel.setText("⏳ Turnos: " + motor.getTurnosRestantes());
+        vidaLabel.setText("Vida: " + motor.getJugador().getVidaActual() + "/" + motor.getJugador().getVidaMax());
+        ataqueLabel.setText("Ataque: " + motor.getJugador().getAtaqueTotal());
+        defensaLabel.setText("Defensa: " + motor.getJugador().getDefensaTotal());
+        turnosLabel.setText("Turnos restantes: " + motor.getTurnosRestantes());
     }
 
     /** Sincroniza la lista visual del inventario recorriendo los objetos que posee el jugador actualmente
@@ -555,6 +449,10 @@ public class VentanaJuego {
         return root;
     }
 }
+
+
+
+
 
 
 
