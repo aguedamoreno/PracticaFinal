@@ -6,6 +6,7 @@ module com.example.practicafinal {
 
     exports Interfaz;
     exports Juego;
+    exports Juego.listas;
 
     opens Interfaz to javafx.fxml;
 }
