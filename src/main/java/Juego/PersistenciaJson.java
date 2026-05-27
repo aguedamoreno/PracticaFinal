@@ -13,86 +13,78 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Clase encargada de guardar y cargar una partida completa usando JSON.
- *
- * Esta clase convierte el estado del juego a JSON para poder guardarlo
+/** clase encargada de guardar y cargar una partida completa usando JSON. Convierte el estado del juego a JSON para poder guardarlo
  * en un archivo, y también reconstruye la partida leyendo ese archivo.
  */
 public class PersistenciaJson {
 
-    // Objeto Gson que se usa para convertir JsonObject y JsonArray a texto JSON.
+    // objeto Gson que se usa para convertir a texto JSON
     // setPrettyPrinting() hace que el archivo se guarde bonito y legible.
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    /**
-     * Guarda el estado actual de la partida en un archivo JSON.
-     *
+    /** guarda el estado actual de la partida en un archivo JSON
      * @param motor motor del juego que contiene toda la partida actual
      * @param ruta ruta donde se guardará el archivo JSON
      * @throws IOException si no se puede guardar el archivo
      */
     public void guardarEstado(MotorJuego motor, Path ruta) throws IOException {
 
-        // Si no hay motor, no hay partida que guardar.
+        // si no hay motor, no hay partida que guardar
         if (motor == null) {
             throw new IOException("No hay partida activa para guardar.");
         }
 
-        // Si la ruta tiene una carpeta padre, nos aseguramos de que exista.
-        // Por ejemplo, si la ruta es saves/partida.json, crea la carpeta saves.
+        // si la ruta tiene una carpeta padre, nos aseguramos de que exista
+        // por ejemplo, si la ruta es saves/partida.json, crea la carpeta saves
         if (ruta.getParent() != null) {
             Files.createDirectories(ruta.getParent());
         }
 
-        // Creamos un JsonObject con todos los datos importantes del motor.
+        // creamos un JsonObject con todos los datos importantes del motor
         JsonObject estado = crearJsonDesdeMotor(motor);
 
-        // Convertimos el JsonObject a texto JSON usando Gson.
+        // convertimos el JsonObject a texto JSON usando Gson
         String json = gson.toJson(estado);
 
-        // Escribimos el JSON en el archivo usando UTF-8 para admitir tildes.
+        // escribimos el JSON en el archivo usando UTF-8 para admitir tildes
         Files.writeString(ruta, json, StandardCharsets.UTF_8);
 
-        // Añadimos al registro del juego que la partida se ha guardado.
+        // añadimos al registro del juego que la partida se ha guardado
         motor.getRegistro().registrar("Partida guardada en " + ruta.toAbsolutePath() + ".");
     }
 
-    /**
-     * Carga una partida guardada desde un archivo JSON.
-     *
+    /** carga una partida guardada desde un archivo JSON
      * @param ruta ruta del archivo JSON que queremos leer
      * @return MotorJuego reconstruido con los datos del archivo
      * @throws IOException si no existe el archivo o el JSON no es válido
      */
     public MotorJuego cargarEstado(Path ruta) throws IOException {
 
-        // Si el archivo no existe, no se puede cargar nada.
+        // si el archivo no existe, no se puede cargar nada
         if (!Files.exists(ruta)) {
             throw new IOException("No existe ninguna partida guardada todavía en " + ruta.toAbsolutePath());
         }
 
-        // Leemos todo el archivo JSON como texto.
+        // leemos todo el archivo JSON como texto
         String texto = Files.readString(ruta, StandardCharsets.UTF_8);
 
-        // Convertimos el texto leído en un JsonObject.
+        // convertimos el texto leído en un JsonObject
         JsonObject estado = JsonParser.parseString(texto).getAsJsonObject();
 
-        // Comprobamos que el JSON tenga la estructura mínima necesaria.
+        // comprobamos que el JSON tenga la estructura mínima necesaria
         validarEstado(estado);
 
-        // Reconstruimos el motor completo a partir del JSON.
+        // reconstruimos el motor completo a partir del JSON
         MotorJuego motor = crearMotorDesdeJson(estado);
 
-        // Añadimos un mensaje al registro indicando que se cargó la partida.
+        // añadimos un mensaje al registro indicando que se cargó la partida
         motor.getRegistro().registrar("Estado cargado desde " + ruta.toAbsolutePath() + ".");
 
-        // Devolvemos la partida ya reconstruida.
+        // devolvemos la partida ya reconstruida
         return motor;
     }
 
-    /**
-     * Devuelve un ejemplo de configuración en formato JSON.
+    /** devuelve un ejemplo de configuración en formato JSON
      *
      * @return JSON de una partida demo
      */
