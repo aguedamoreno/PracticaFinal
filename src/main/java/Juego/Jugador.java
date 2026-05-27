@@ -1,339 +1,347 @@
-package Juego; // indica el paquete al que pertenece esta clase.
-import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa necesaria para este archivo.
+package Juego; // Indica el paquete al que pertenece esta clase
 
-import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa necesaria para este archivo.
+import Juego.listas.ListaSimplementeEnlazada; // Importa la lista enlazada usada para el inventario
 
-/** Clase que representa al jugador: vida, ataque, defensa, inventario, posición y operaciones para usar/equipar objetos y recibir daño
+/** Clase que representa al jugador del juego. Gestiona estadísticas, inventario, posición y acciones del jugador
  */
-public class Jugador { // declara una clase que agrupa datos y métodos relacionados.
-    // Estadísticas básicas
-    private int vidaMax; // declara un atributo/campo de la clase donde se guarda estado.
-    private int vidaActual; // declara un atributo/campo de la clase donde se guarda estado.
-    private int ataqueBase; // declara un atributo/campo de la clase donde se guarda estado.
-    private int defensaBase; // declara un atributo/campo de la clase donde se guarda estado.
-    private int velocidad; // Casillas que puede moverse por turno
+public class Jugador {
 
-    // Mejoras por equipamiento
-    private int ataqueEquipamiento; // Bonus de armas equipadas
-    private int defensaEquipamiento; // Bonus de escudos/armadura equipada
+    private int vidaMax;    // vida máxima del jugador
+    private int vidaActual; // vida actual del jugador
+    private int ataqueBase; // ataque base del jugador
+    private int defensaBase;    // defensa base del jugador
+    private int velocidad;  // número de casillas que puede moverse por turno
+    private int ataqueEquipamiento;    // bonus de ataque por equipamiento
+    private int defensaEquipamiento;    // bonus de defensa por equipamiento
+    private ListaSimplementeEnlazada<Objeto> inventario;    // inventario del jugador
+    private String habitacionActualId;  // ID de la habitación actual
+    private int posicionX;  // posición X del jugador
+    private int posicionY;  // posición Y del jugador
+    private boolean vivo;   // estado de vida del jugador
 
-    // Inventario de objetos
-    private ListaSimplementeEnlazada<Objeto> inventario; // declara un atributo/campo de la clase donde se guarda estado.
-
-    // Posición actual (habitación + coordenadas dentro de la habitación)
-    private String habitacionActualId; // declara un atributo/campo de la clase donde se guarda estado.
-    private int posicionX; // declara un atributo/campo de la clase donde se guarda estado.
-    private int posicionY; // declara un atributo/campo de la clase donde se guarda estado.
-
-    // Estado
-    private boolean vivo; // declara un atributo/campo de la clase donde se guarda estado.
-
-    /**
-     * Constructor que inicializa los atributos principales del objeto.
+    /** Constructor del jugador. Inicializa estadísticas y estructuras necesarias
      */
     public Jugador(int vidaMax, int ataque, int defensa, int velocidad) {
-        this.vidaMax = vidaMax; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.vidaActual = vidaMax; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.ataqueBase = ataque; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.defensaBase = defensa; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.velocidad = velocidad; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.ataqueEquipamiento = 0; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.defensaEquipamiento = 0; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.inventario = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        this.vivo = true; // guarda el valor recibido dentro del atributo del objeto actual.
+
+        this.vidaMax = vidaMax; // inicializa la vida máxima
+        this.vidaActual = vidaMax;  // la vida actual empieza al máximo
+        this.ataqueBase = ataque;   // guarda el ataque base
+        this.defensaBase = defensa; // guarda la defensa base
+        this.velocidad = velocidad; // guarda la velocidad
+        this.ataqueEquipamiento = 0;    // inicializa el bonus de ataque
+        this.defensaEquipamiento = 0;   // inicializa el bonus de defensa
+        this.inventario = new ListaSimplementeEnlazada<>(); // crea el inventario vacío
+        this.vivo = true;   // el jugador empieza vivo
     }
 
-    // Getters y Setters
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la vida máxima del jugador
      */
     public int getVidaMax() {
-        return vidaMax; // devuelve el resultado calculado por el método.
+        return vidaMax;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la vida actual del jugador
      */
     public int getVidaActual() {
-        return vidaActual; // devuelve el resultado calculado por el método.
+        return vidaActual;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica la vida actual del jugador. Nunca puede bajar de 0 ni superar la vida máxima
      */
     public void setVidaActual(int vidaActual) {
-        this.vidaActual = Math.max(0, Math.min(vidaMax, vidaActual)); // guarda el valor recibido dentro del atributo del objeto actual.
+        this.vidaActual = Math.max(0, Math.min(vidaMax, vidaActual));
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el ataque base
      */
     public int getAtaqueBase() {
-        return ataqueBase; // devuelve el resultado calculado por el método.
+        return ataqueBase;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la defensa base
      */
     public int getDefensaBase() {
-        return defensaBase; // devuelve el resultado calculado por el método.
+        return defensaBase;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la velocidad del jugador
      */
     public int getVelocidad() {
-        return velocidad; // devuelve el resultado calculado por el método.
+        return velocidad;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el ataque extra por equipamiento
      */
     public int getAtaqueEquipamiento() {
-        return ataqueEquipamiento; // devuelve el resultado calculado por el método.
+        return ataqueEquipamiento;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica el ataque extra por equipamiento
      */
     public void setAtaqueEquipamiento(int ataqueEquipamiento) {
-        this.ataqueEquipamiento = ataqueEquipamiento; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.ataqueEquipamiento = ataqueEquipamiento;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la defensa extra por equipamiento
      */
     public int getDefensaEquipamiento() {
-        return defensaEquipamiento; // devuelve el resultado calculado por el método.
+        return defensaEquipamiento;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica la defensa extra por equipamiento
      */
     public void setDefensaEquipamiento(int defensaEquipamiento) {
-        this.defensaEquipamiento = defensaEquipamiento; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.defensaEquipamiento = defensaEquipamiento;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el ataque total del jugador
      */
     public int getAtaqueTotal() {
-        return ataqueBase + ataqueEquipamiento; // devuelve el resultado calculado por el método.
+        return ataqueBase + ataqueEquipamiento;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la defensa total del jugador
      */
     public int getDefensaTotal() {
-        return defensaBase + defensaEquipamiento; // devuelve el resultado calculado por el método.
+        return defensaBase + defensaEquipamiento;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el inventario del jugador
      */
     public ListaSimplementeEnlazada<Objeto> getInventario() {
-        return inventario; // devuelve el resultado calculado por el método.
+        return inventario;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el ID de la habitación actual
      */
     public String getHabitacionActualId() {
-        return habitacionActualId; // devuelve el resultado calculado por el método.
+        return habitacionActualId;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica el ID de la habitación actual
      */
     public void setHabitacionActualId(String habitacionActualId) {
-        this.habitacionActualId = habitacionActualId; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.habitacionActualId = habitacionActualId;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la posición X del jugador
      */
     public int getPosicionX() {
-        return posicionX; // devuelve el resultado calculado por el método.
+        return posicionX;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica la posición X del jugador
      */
     public void setPosicionX(int posicionX) {
-        this.posicionX = posicionX; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.posicionX = posicionX;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la posición Y del jugador
      */
     public int getPosicionY() {
-        return posicionY; // devuelve el resultado calculado por el método.
+        return posicionY;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica la posición Y del jugador
      */
     public void setPosicionY(int posicionY) {
-        this.posicionY = posicionY; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.posicionY = posicionY;
     }
 
-    /**
-     * Devuelve verdadero o falso según el estado actual del objeto.
+    /** Devuelve si el jugador sigue vivo
      */
     public boolean isVivo() {
-        return vivo; // devuelve el resultado calculado por el método.
+        return vivo;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica el estado de vida del jugador
      */
     public void setVivo(boolean vivo) {
-        this.vivo = vivo; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.vivo = vivo;
     }
 
-    /**
-     * Añade un objeto al inventario
-     * @param objeto Objeto a añadir
+    /** Añade un objeto al inventario
      */
     public void agregarObjetoInventario(Objeto objeto) {
-        inventario.insertarUltimo(objeto); // ejecuta una llamada a un método para realizar una acción concreta.
+
+        // inserta el objeto al final del inventario
+        inventario.insertarUltimo(objeto);
     }
 
-    /**
-     * Elimina un objeto del inventario por índice
-     * @param indice Índice del objeto a eliminar
-     * @return Objeto eliminado o null si índice inválido
+    /** Elimina un objeto del inventario según su índice
      */
     public Objeto eliminarObjetoInventario(int indice) {
-        if (indice < 0 || indice >= inventario.tamaño()) { // comprueba una condición para decidir qué camino sigue el programa.
-            return null; // devuelve el resultado calculado por el método.
+
+        // comprueba si el índice es válido
+        if (indice < 0 || indice >= inventario.tamaño()) {
+            return null;
         }
-        return inventario.eliminar(indice); // devuelve el resultado calculado por el método.
+
+        // elimina y devuelve el objeto
+        return inventario.eliminar(indice);
     }
 
-    /**
-     * Usa un objeto del inventario por índice
-     * @param indice Índice del objeto a usar
-     * @return true si se pudo usar, false en caso contrario
+    /** Usa un objeto del inventario
      */
     public boolean usarObjetoInventario(int indice) {
-        if (indice < 0 || indice >= inventario.tamaño()) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
+
+        // comprueba si el índice es válido
+        if (indice < 0 || indice >= inventario.tamaño()) {
+            return false;
         }
-        Objeto objeto = inventario.obtener(indice); // asigna o actualiza un valor necesario para el estado del programa.
-        if (objeto.puedeUsarse()) { // comprueba una condición para decidir qué camino sigue el programa.
-            boolean usado = objeto.usar(); // asigna o actualiza un valor necesario para el estado del programa.
-            if (usado && objeto.isFungible() && objeto.getUsosRestantes() == 0) { // comprueba una condición para decidir qué camino sigue el programa.
-                // Si es fungible y se agotó, lo removemos del inventario
-                inventario.eliminar(indice); // ejecuta una llamada a un método para realizar una acción concreta.
+
+        // obtiene el objeto
+        Objeto objeto = inventario.obtener(indice);
+
+        // comprueba si puede usarse
+        if (objeto.puedeUsarse()) {
+
+            // usa el objeto
+            boolean usado = objeto.usar();
+
+            // si es fungible y no tiene usos restantes se elimina
+            if (usado && objeto.isFungible() && objeto.getUsosRestantes() == 0) {
+                inventario.eliminar(indice);
             }
-            return true; // devuelve el resultado calculado por el método.
+
+            return true;
         }
-        return false; // devuelve el resultado calculado por el método.
+
+        return false;
     }
 
-    /**
-     * Equipo un objeto del inventario (si es equipable)
-     * @param indice Índice del objeto a equipo
-     * @return true si se pudo equipo, false en caso contrario
+    /** Equipa un objeto del inventario
      */
     public boolean equipoObjetoInventario(int indice) {
-        if (indice < 0 || indice >= inventario.tamaño()) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
-        }
-        Objeto objeto = inventario.obtener(indice); // asigna o actualiza un valor necesario para el estado del programa.
-        if (!objeto.isEquipable()) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
+
+        // comprueba si el índice es válido
+        if (indice < 0 || indice >= inventario.tamaño()) {
+            return false;
         }
 
-        // Aplicar efectos de equipamiento según tipo
-        switch (objeto.getTipo()) {
-            case ARMA:
-                setAtaqueEquipamiento(getAtaqueEquipamiento() + objeto.getValor()); // ejecuta una llamada a un método para realizar una acción concreta.
-                break; // controla el flujo del bucle actual.
-            case ESCUDO:
-                setDefensaEquipamiento(getDefensaEquipamiento() + objeto.getValor()); // ejecuta una llamada a un método para realizar una acción concreta.
-                break; // controla el flujo del bucle actual.
-            // Otros tipos de equipamiento pueden añadirse aquí
-            default:
-                // Si no es un tipo de equipamiento reconocido, no se equipo
-                return false; // devuelve el resultado calculado por el método.
+        // obtiene el objeto
+        Objeto objeto = inventario.obtener(indice);
+
+        // comprueba si es equipable
+        if (!objeto.isEquipable()) {
+            return false;
         }
-        // Nota: No removemos el objeto del inventario al equipoarlo
-        return true; // devuelve el resultado calculado por el método.
+
+        // aplica los efectos según el tipo
+        switch (objeto.getTipo()) {
+
+            case ARMA:
+
+                // aumenta el ataque
+                setAtaqueEquipamiento(
+                        getAtaqueEquipamiento() + objeto.getValor()
+                );
+                break;
+
+            case ESCUDO:
+
+                // aumenta la defensa
+                setDefensaEquipamiento(
+                        getDefensaEquipamiento() + objeto.getValor()
+                );
+                break;
+
+            default:
+                return false;
+        }
+
+        return true;
     }
 
-    /**
-     * Des equipo un objeto del inventario (si estaba equipo)
-     * @param indice Índice del objeto a des equipo
-     * @return true si se pudo des equipo, false en caso contrario
+    /** Desequipa un objeto del inventario
      */
     public boolean desequipoObjetoInventario(int indice) {
-        if (indice < 0 || indice >= inventario.tamaño()) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
-        }
-        Objeto objeto = inventario.obtener(indice); // asigna o actualiza un valor necesario para el estado del programa.
-        if (!objeto.isEquipable()) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
+
+        // comprueba si el índice es válido
+        if (indice < 0 || indice >= inventario.tamaño()) {
+            return false;
         }
 
-        // Remover efectos de equipamiento según tipo
-        switch (objeto.getTipo()) {
-            case ARMA:
-                setAtaqueEquipamiento(getAtaqueEquipamiento() - objeto.getValor()); // ejecuta una llamada a un método para realizar una acción concreta.
-                break; // controla el flujo del bucle actual.
-            case ESCUDO:
-                setDefensaEquipamiento(getDefensaEquipamiento() - objeto.getValor()); // ejecuta una llamada a un método para realizar una acción concreta.
-                break; // controla el flujo del bucle actual.
-            default:
-                return false; // devuelve el resultado calculado por el método.
+        // obtiene el objeto
+        Objeto objeto = inventario.obtener(indice);
+
+        // comprueba si es equipable
+        if (!objeto.isEquipable()) {
+            return false;
         }
-        return true; // devuelve el resultado calculado por el método.
+
+        // elimina efectos según el tipo
+        switch (objeto.getTipo()) {
+
+            case ARMA:
+
+                // reduce el ataque
+                setAtaqueEquipamiento(
+                        getAtaqueEquipamiento() - objeto.getValor()
+                );
+                break;
+
+            case ESCUDO:
+
+                // reduce la defensa
+                setDefensaEquipamiento(
+                        getDefensaEquipamiento() - objeto.getValor()
+                );
+                break;
+
+            default:
+                return false;
+        }
+
+        return true;
     }
 
-    /**
-     * Verifica si el jugador puede moverse a una posición dentro de la habitación actual
-     * (se verificará desde MotorJuego usando el mapa de la habitación)
-     * Este método solo valida que las coordenadas estén dentro de rangos razonables
-     * (la validación específica de accesibilidad la hace la habitación)
-     * @param x Coordenada X
-     * @param y Coordenada Y
-     * @return true si las coordenadas son válidas (rango no negativo)
+    /** Comprueba si unas coordenadas son válidas
      */
     public boolean esPosicionValida(int x, int y) {
-        return x >= 0 && y >= 0; // devuelve el resultado calculado por el método.
+
+        // las posiciones deben ser positivas
+        return x >= 0 && y >= 0;
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Aplica daño al jugador teniendo en cuenta la defensa
      */
     public int recibirDano(int ataqueEnemigo) {
-        // 1. Calculamos la mitigación: el daño real no puede ser menor que 0
-        int danoReal = Math.max(0, ataqueEnemigo - getDefensaTotal()); // asigna o actualiza un valor necesario para el estado del programa.
 
-        // 2. Restamos el daño real a la vida actual, asegurando que no baje de 0
-        this.vidaActual = Math.max(0, this.vidaActual - danoReal); // guarda el valor recibido dentro del atributo del objeto actual.
+        // calcula el daño real
+        int danoReal = Math.max(
+                0,
+                ataqueEnemigo - getDefensaTotal()
+        );
 
-        // 3. Si la vida llega a 0, actualizamos el estado del jugador a muerto
-        if (this.vidaActual == 0) { // comprueba una condición para decidir qué camino sigue el programa.
-            this.vivo = false; // guarda el valor recibido dentro del atributo del objeto actual.
+        // reduce la vida actual
+        this.vidaActual = Math.max(
+                0,
+                this.vidaActual - danoReal
+        );
+
+        // comprueba si el jugador murió
+        if (this.vidaActual == 0) {
+            this.vivo = false;
         }
 
-        // Devolvemos el daño real para poder pintarlo en los registros de la interfaz
-        return danoReal; // devuelve el resultado calculado por el método.
+        // devuelve el daño aplicado
+        return danoReal;
     }
 
-    @Override
-    /**
-     * Devuelve una representación en texto del objeto para mostrarlo fácilmente.
+    /** Devuelve una representación en texto del jugador
      */
+    @Override
     public String toString() {
-        return "Jugador [Vida: " + vidaActual + "/" + vidaMax + // devuelve el resultado calculado por el método.
+
+        return "Jugador [Vida: " +
+                vidaActual + "/" + vidaMax +
                 ", Ataque: " + getAtaqueTotal() +
                 ", Defensa: " + getDefensaTotal() +
                 ", Velocidad: " + velocidad +
-                ", Posición: (" + posicionX + "," + posicionY + ")" +
-                ", Inventario: " + inventario.tamaño() + " objetos]";
+                ", Posición: (" +
+                posicionX + "," + posicionY + ")" +
+                ", Inventario: " +
+                inventario.tamaño() + " objetos]";
     }
 }
-

@@ -1,322 +1,418 @@
 package Juego; // indica el paquete al que pertenece esta clase.
 
-import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa necesaria para este archivo.
+import Juego.listas.ListaSimplementeEnlazada; // importa la lista enlazada utilizada en la clase.
 
-/**
- * Clase que representa una habitación rectangular formada por celdas y ofrece métodos para colocar elementos y consultar posiciones.
- *
- * Comentarios añadidos para explicar la función de la clase, sus variables
- * y los bloques principales de código sin cambiar la lógica original.
+/** Clase que representa una habitación del juego, cada habitación está formada por una matriz de celdas donde pueden existir enemigos, objetos, trampas, puertas y salidas.
  */
-public class Habitacion { // declara una clase que agrupa datos y métodos relacionados.
-    private Celda[][] matriz; // declara un atributo/campo de la clase donde se guarda estado.
-    private int filas; // declara un atributo/campo de la clase donde se guarda estado.
-    private int columnas; // declara un atributo/campo de la clase donde se guarda estado.
-    private String id; // Identificador único de la habitación
+public class Habitacion {
 
-    /**
-     * Constructor que inicializa los atributos principales del objeto.
+    // matriz que almacena todas las celdas de la habitación
+    private Celda[][] matriz;
+
+    // número de filas y columnas de la habitación
+    private int filas;
+    private int columnas;
+
+    // identificador único de la habitación
+    private String id;
+
+    /** Constructor de la habitación. Inicializa la matriz y crea todas las celdas vacías.
      */
     public Habitacion(String id, int filas, int columnas) {
-        this.id = id; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.filas = filas; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.columnas = columnas; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.matriz = new Celda[filas][columnas]; // crea un nuevo objeto para poder usarlo después.
 
-        // Inicializar todas las celdas como vacías
-        for (int i = 0; i < filas; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int j = 0; j < columnas; j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                matriz[i][j] = new Celda(Celda.Tipo.VACIA); // crea un nuevo objeto para poder usarlo después.
+
+        this.id = id;   // guarda el identificador
+        this.filas = filas; // guarda el número de filas
+        this.columnas = columnas;   // guarda el número de columnas
+        this.matriz = new Celda[filas][columnas];   // crea la matriz de celdas
+
+        // inicializa todas las celdas como vacías
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // crea una celda vacía en cada posición
+                matriz[i][j] = new Celda(Celda.Tipo.VACIA);
             }
         }
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el identificador de la habitación
      */
     public String getId() {
-        return id; // devuelve el resultado calculado por el método.
+        return id;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el número de filas
      */
     public int getFilas() {
-        return filas; // devuelve el resultado calculado por el método.
+        return filas;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve el número de columnas
      */
     public int getColumnas() {
-        return columnas; // devuelve el resultado calculado por el método.
+        return columnas;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la celda de una posición concreta
      */
     public Celda getCelda(int fila, int columna) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            return matriz[fila][columna]; // devuelve el resultado calculado por el método.
+
+        // comprueba si la posición es válida
+        if (esPosicionValida(fila, columna)) {
+
+            // devuelve la celda correspondiente
+            return matriz[fila][columna];
         }
-        return null; // devuelve el resultado calculado por el método.
+
+        // si no es válida devuelve null
+        return null;
     }
 
-    /**
-     * Método setter que modifica el valor de un atributo.
+    /** Modifica una celda concreta de la matriz
      */
     public void setCelda(int fila, int columna, Celda celda) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            matriz[fila][columna] = celda; // asigna o actualiza un valor necesario para el estado del programa.
+
+        // comprueba si la posición existe
+        if (esPosicionValida(fila, columna)) {
+
+            // sustituye la celda
+            matriz[fila][columna] = celda;
         }
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Comprueba si una posición está dentro de la habitación
      */
     public boolean esPosicionValida(int fila, int columna) {
-        return fila >= 0 && fila < filas && columna >= 0 && columna < columnas; // devuelve el resultado calculado por el método.
+
+        return fila >= 0 &&
+                fila < filas &&
+                columna >= 0 &&
+                columna < columnas;
     }
 
-    /**
-     * Coloca un objeto en una posición específica
-     * @param fila Fila de la matriz
-     * @param columna Columna de la matriz
-     * @param objeto Objeto a colocar
+    /** Coloca un objeto en una celda específica
      */
     public void colocarObjeto(int fila, int columna, Object objeto) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            Celda celda = getCelda(fila, columna); // asigna o actualiza un valor necesario para el estado del programa.
-            celda.setTipo(Celda.Tipo.OBJETO); // ejecuta una llamada a un método para realizar una acción concreta.
-            celda.setContenido(objeto); // ejecuta una llamada a un método para realizar una acción concreta.
+
+        // comprueba si la posición es válida
+        if (esPosicionValida(fila, columna)) {
+            Celda celda = getCelda(fila, columna);  // obtiene la celda
+            celda.setTipo(Celda.Tipo.OBJETO);   // cambia el tipo de la celda
+            celda.setContenido(objeto); // guarda el objeto en la celda
         }
     }
 
-    /**
-     * Coloca un enemigo en una posición específica
-     * @param fila Fila de la matriz
-     * @param columna Columna de la matriz
-     * @param enemigo Enemigo a colocar
+    /** Coloca un enemigo en una celda específica
      */
     public void colocarEnemigo(int fila, int columna, Object enemigo) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            Celda celda = getCelda(fila, columna); // asigna o actualiza un valor necesario para el estado del programa.
-            celda.setTipo(Celda.Tipo.ENEMIGO); // ejecuta una llamada a un método para realizar una acción concreta.
-            celda.setContenido(enemigo); // ejecuta una llamada a un método para realizar una acción concreta.
 
-            // El enemigo también guarda internamente su posición.
-            if (enemigo instanceof Enemigo) { // comprueba una condición para decidir qué camino sigue el programa.
-                ((Enemigo) enemigo).setPosicion(fila, columna); // ejecuta una llamada a un método para realizar una acción concreta.
+        // comprueba si la posición es válida
+        if (esPosicionValida(fila, columna)) {
+            Celda celda = getCelda(fila, columna);  // obtiene la celda
+            celda.setTipo(Celda.Tipo.ENEMIGO);  // marca la celda como enemigo
+            celda.setContenido(enemigo);    // guarda el enemigo en la celda
+
+            // si realmente es un enemigo, también actualiza su posición interna
+            if (enemigo instanceof Enemigo) {
+
+                ((Enemigo) enemigo).setPosicion(fila, columna);
             }
         }
     }
 
-    /**
-     * Coloca una puerta en una posición específica
-     * @param fila Fila de la matriz
-     * @param columna Columna de la matriz
-     * @param destino Id de la habitación de destino (opcional)
+    /** Coloca una puerta en la habitación
      */
     public void colocarPuerta(int fila, int columna, String destino) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            Celda celda = getCelda(fila, columna); // asigna o actualiza un valor necesario para el estado del programa.
-            celda.setTipo(Celda.Tipo.PUERTA); // ejecuta una llamada a un método para realizar una acción concreta.
-            celda.setContenido(destino); // El destino puede ser el id de otra habitación
+
+        // comprueba si la posición existe
+        if (esPosicionValida(fila, columna)) {
+            Celda celda = getCelda(fila, columna);  // obtiene la celda
+            celda.setTipo(Celda.Tipo.PUERTA);   // marca la celda como puerta
+            celda.setContenido(destino);    // guarda el identificador de la habitación destino
         }
     }
 
-    /**
-     * Coloca una trampa en una posición específica
-     * @param fila Fila de la matriz
-     * @param columna Columna de la matriz
+    /** Coloca una trampa en una celda
      */
     public void colocarTrampa(int fila, int columna) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            Celda celda = getCelda(fila, columna); // asigna o actualiza un valor necesario para el estado del programa.
-            celda.setTipo(Celda.Tipo.TRAMPA); // ejecuta una llamada a un método para realizar una acción concreta.
-            celda.setAccesible(true); // Las trampas SÍ son accesibles: el jugador puede pisarlas y se activan
+
+        // comprueba si la posición es válida
+        if (esPosicionValida(fila, columna)) {
+            Celda celda = getCelda(fila, columna);  // obtiene la celda
+            celda.setTipo(Celda.Tipo.TRAMPA);   // marca la celda como trampa
+
+            celda.setAccesible(true);   // las trampas se pueden pisar
         }
     }
 
-    /**
-     * Coloca una salida en una posición específica
-     * @param fila Fila de la matriz
-     * @param columna Columna de la matriz
+    /** Coloca una salida en la habitación
      */
     public void colocarSalida(int fila, int columna) {
-        if (esPosicionValida(fila, columna)) { // comprueba una condición para decidir qué camino sigue el programa.
-            Celda celda = getCelda(fila, columna); // asigna o actualiza un valor necesario para el estado del programa.
-            celda.setTipo(Celda.Tipo.SALIDA); // ejecuta una llamada a un método para realizar una acción concreta.
+
+        // comprueba si la posición existe
+        if (esPosicionValida(fila, columna)) {
+            Celda celda = getCelda(fila, columna);  // obtiene la celda
+            celda.setTipo(Celda.Tipo.SALIDA);   // marca la celda como salida
         }
     }
 
-    /**
-     * Obtiene todas las posiciones vacías en la habitación
-     * @return Lista de coordenadas (fila, columna) de celdas vacías
+    /** Devuelve todas las posiciones vacías y accesibles
      */
     public ListaSimplementeEnlazada<Posicion> obtenerPosicionesVacias() {
-        ListaSimplementeEnlazada<Posicion> posiciones = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        for (int i = 0; i < filas; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int j = 0; j < columnas; j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                if (matriz[i][j].getTipo() == Celda.Tipo.VACIA && matriz[i][j].isAccesible()) { // comprueba una condición para decidir qué camino sigue el programa.
-                    posiciones.insertarUltimo(new Posicion(i, j)); // crea un nuevo objeto para poder usarlo después.
+
+        // lista donde se guardarán las posiciones
+        ListaSimplementeEnlazada<Posicion> posiciones =
+                new ListaSimplementeEnlazada<>();
+
+        // recorre toda la matriz
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // comprueba si la celda está vacía y es accesible
+                if (matriz[i][j].getTipo() == Celda.Tipo.VACIA
+                        && matriz[i][j].isAccesible()) {
+
+                    // guarda la posición
+                    posiciones.insertarUltimo(new Posicion(i, j));
                 }
             }
         }
-        return posiciones; // devuelve el resultado calculado por el método.
+
+        return posiciones;
     }
 
-    /**
-     * Obtiene todas las posiciones con objetos
-     * @return Lista de coordenadas (fila, columna) de celdas con objetos
+    /** Devuelve todas las posiciones con objetos
      */
     public ListaSimplementeEnlazada<Posicion> obtenerPosicionesConObjetos() {
-        ListaSimplementeEnlazada<Posicion> posiciones = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        for (int i = 0; i < filas; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int j = 0; j < columnas; j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                if (matriz[i][j].getTipo() == Celda.Tipo.OBJETO) { // comprueba una condición para decidir qué camino sigue el programa.
-                    posiciones.insertarUltimo(new Posicion(i, j)); // crea un nuevo objeto para poder usarlo después.
+
+        ListaSimplementeEnlazada<Posicion> posiciones =
+                new ListaSimplementeEnlazada<>();
+
+        // recorre toda la habitación
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // comprueba si la celda tiene un objeto
+                if (matriz[i][j].getTipo() == Celda.Tipo.OBJETO) {
+
+                    posiciones.insertarUltimo(new Posicion(i, j));
                 }
             }
         }
-        return posiciones; // devuelve el resultado calculado por el método.
+
+        return posiciones;
     }
 
-    /**
-     * Obtiene todas las posiciones con enemigos
-     * @return Lista de coordenadas (fila, columna) de celdas con enemigos
+    /** Devuelve todas las posiciones donde hay enemigos
      */
     public ListaSimplementeEnlazada<Posicion> obtenerPosicionesConEnemigos() {
-        ListaSimplementeEnlazada<Posicion> posiciones = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        for (int i = 0; i < filas; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int j = 0; j < columnas; j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                if (matriz[i][j].getTipo() == Celda.Tipo.ENEMIGO) { // comprueba una condición para decidir qué camino sigue el programa.
-                    posiciones.insertarUltimo(new Posicion(i, j)); // crea un nuevo objeto para poder usarlo después.
+
+        ListaSimplementeEnlazada<Posicion> posiciones =
+                new ListaSimplementeEnlazada<>();
+
+        // recorre toda la matriz
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // comprueba si la celda contiene un enemigo
+                if (matriz[i][j].getTipo() == Celda.Tipo.ENEMIGO) {
+
+                    posiciones.insertarUltimo(new Posicion(i, j));
                 }
             }
         }
-        return posiciones; // devuelve el resultado calculado por el método.
+
+        return posiciones;
     }
 
-    /**
-     * Obtiene todas las posiciones con puertas
-     * @return Lista de coordenadas (fila, columna) de celdas con puertas
+    /** Devuelve todas las posiciones con puertas
      */
     public ListaSimplementeEnlazada<Posicion> obtenerPosicionesConPuertas() {
-        ListaSimplementeEnlazada<Posicion> posiciones = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        for (int i = 0; i < filas; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int j = 0; j < columnas; j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                if (matriz[i][j].getTipo() == Celda.Tipo.PUERTA) { // comprueba una condición para decidir qué camino sigue el programa.
-                    posiciones.insertarUltimo(new Posicion(i, j)); // crea un nuevo objeto para poder usarlo después.
+
+        ListaSimplementeEnlazada<Posicion> posiciones =
+                new ListaSimplementeEnlazada<>();
+
+        // recorre la matriz completa
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // comprueba si hay una puerta
+                if (matriz[i][j].getTipo() == Celda.Tipo.PUERTA) {
+
+                    posiciones.insertarUltimo(new Posicion(i, j));
                 }
             }
         }
-        return posiciones; // devuelve el resultado calculado por el método.
+
+        return posiciones;
     }
 
-    /**
-     * Calcula las posiciones alcanzables en cruz (solo arriba, abajo, izquierda, derecha)
-     * a una distancia máxima dada (por regla, 2 casillas).
+    /** Calcula las posiciones alcanzables por el jugador en línea recta hasta una distancia máxima.
      */
-    public ListaSimplementeEnlazada<Posicion> calcularPosicionesAlcanzables(Posicion origen, int distanciaMaxima) {
-        ListaSimplementeEnlazada<Posicion> alcanzables = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
+    public ListaSimplementeEnlazada<Posicion> calcularPosicionesAlcanzables(
+            Posicion origen,
+            int distanciaMaxima
+    ) {
 
-        if (origen == null) return alcanzables; // comprueba una condición para decidir qué camino sigue el programa.
+        // lista de posiciones alcanzables
+        ListaSimplementeEnlazada<Posicion> alcanzables =
+                new ListaSimplementeEnlazada<>();
 
-        int filaOrig = origen.getFila(); // asigna o actualiza un valor necesario para el estado del programa.
-        int colOrig = origen.getColumna(); // asigna o actualiza un valor necesario para el estado del programa.
+        // si el origen es nulo devuelve lista vacía
+        if (origen == null) {
+            return alcanzables;
+        }
 
-        // El propio origen es alcanzable (por si decide no moverse)
-        alcanzables.insertarUltimo(origen); // ejecuta una llamada a un método para realizar una acción concreta.
 
-        // Direcciones en cruz: {fila, columna} -> Arriba, Abajo, Izquierda, Derecha
-        int[][] direcciones = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} }; // asigna o actualiza un valor necesario para el estado del programa.
+        int filaOrig = origen.getFila();    // guarda la fila de origen
 
-        for (int[] dir : direcciones) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int d = 1; d <= distanciaMaxima; d++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                int nuevaFila = filaOrig + (dir[0] * d); // asigna o actualiza un valor necesario para el estado del programa.
-                int nuevaCol = colOrig + (dir[1] * d); // asigna o actualiza un valor necesario para el estado del programa.
 
-                if (esPosicionValida(nuevaFila, nuevaCol)) { // comprueba una condición para decidir qué camino sigue el programa.
-                    Celda celda = getCelda(nuevaFila, nuevaCol); // asigna o actualiza un valor necesario para el estado del programa.
-                    // Si hay un muro o no es accesible, se corta la línea en esa dirección
-                    if (celda != null && celda.estaLibreParaMovimiento()) { // comprueba una condición para decidir qué camino sigue el programa.
-                        alcanzables.insertarUltimo(new Posicion(nuevaFila, nuevaCol)); // crea un nuevo objeto para poder usarlo después.
+        int colOrig = origen.getColumna();  // guarda la columna de origen
+
+
+        alcanzables.insertarUltimo(origen); // la propia posición también cuenta
+
+        // direcciones posibles: arriba, abajo, izquierda y derecha
+        int[][] direcciones = {
+                {-1, 0},
+                {1, 0},
+                {0, -1},
+                {0, 1}
+        };
+
+        // recorre todas las direcciones
+        for (int[] dir : direcciones) {
+
+            // avanza hasta la distancia máxima
+            for (int d = 1; d <= distanciaMaxima; d++) {
+
+
+                int nuevaFila = filaOrig + (dir[0] * d);    // calcula la nueva fila
+
+
+                int nuevaCol = colOrig + (dir[1] * d);  // calcula la nueva columna
+
+                // comprueba si la posición existe
+                if (esPosicionValida(nuevaFila, nuevaCol)) {
+
+
+                    Celda celda = getCelda(nuevaFila, nuevaCol);    // obtiene la celda destino
+
+                    // si está libre se añade a las alcanzables
+                    if (celda != null &&
+                            celda.estaLibreParaMovimiento()) {
+
+                        alcanzables.insertarUltimo(
+                                new Posicion(nuevaFila, nuevaCol)
+                        );
+
                     } else {
-                        // Si se topa con un obstáculo infranqueable, no puede saltárselo
-                        break; // controla el flujo del bucle actual.
+
+                        // si encuentra un obstáculo deja de avanzar
+                        break;
                     }
                 }
             }
         }
 
-        return alcanzables; // devuelve el resultado calculado por el método.
+        return alcanzables;
     }
 
-
-    @Override
-    /**
-     * Devuelve una representación en texto del objeto para mostrarlo fácilmente.
+    /** Devuelve una representación en texto de la habitación
      */
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(); // crea un nuevo objeto para poder usarlo después.
-        sb.append("Habitación ").append(id).append(" (").append(filas).append("x").append(columnas).append("):\n"); // ejecuta una llamada a un método para realizar una acción concreta.
-        for (int i = 0; i < filas; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            for (int j = 0; j < columnas; j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                sb.append(matriz[i][j]).append(" "); // ejecuta una llamada a un método para realizar una acción concreta.
+
+        // crea un StringBuilder para construir el texto
+        StringBuilder sb = new StringBuilder();
+
+        // añade información básica
+        sb.append("Habitación ")
+                .append(id)
+                .append(" (")
+                .append(filas)
+                .append("x")
+                .append(columnas)
+                .append("):\n");
+
+        // recorre la matriz completa
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // añade la representación de cada celda
+                sb.append(matriz[i][j]).append(" ");
             }
-            sb.append("\n"); // ejecuta una llamada a un método para realizar una acción concreta.
+
+            // salto de línea por fila
+            sb.append("\n");
         }
-        return sb.toString(); // devuelve el resultado calculado por el método.
+
+        return sb.toString();
     }
 }
 
-/**
- * Clase simple para representar una posición (fila, columna)
+/** Clase auxiliar que representa una posición dentro de la habitación
  */
-class Posicion { // declara una clase que agrupa datos y métodos relacionados.
-    private int fila; // declara un atributo/campo de la clase donde se guarda estado.
-    private int columna; // declara un atributo/campo de la clase donde se guarda estado.
+class Posicion {
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+
+    private int fila;   // fila de la posición
+
+
+    private int columna;    // columna de la posición
+
+    /** Constructor de la posición
      */
     public Posicion(int fila, int columna) {
-        this.fila = fila; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.columna = columna; // guarda el valor recibido dentro del atributo del objeto actual.
+
+
+        this.fila = fila;   // guarda la fila
+
+
+        this.columna = columna; // guarda la columna
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la fila
      */
     public int getFila() {
-        return fila; // devuelve el resultado calculado por el método.
+        return fila;
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Devuelve la columna
      */
     public int getColumna() {
-        return columna; // devuelve el resultado calculado por el método.
+        return columna;
     }
 
-    @Override
-    /**
-     * Compara este objeto con otro para saber si representan lo mismo.
+    /** Comprueba si dos posiciones son iguales
      */
+    @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true; // comprueba una condición para decidir qué camino sigue el programa.
-        if (obj == null || getClass() != obj.getClass()) return false; // comprueba una condición para decidir qué camino sigue el programa.
-        Posicion otra = (Posicion) obj; // asigna o actualiza un valor necesario para el estado del programa.
-        return fila == otra.fila && columna == otra.columna; // devuelve el resultado calculado por el método.
+
+        // comprueba si son el mismo objeto
+        if (this == obj) {
+            return true;
+        }
+
+        // comprueba si el objeto es válido
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        // convierte el objeto
+        Posicion otra = (Posicion) obj;
+
+        // compara fila y columna
+        return fila == otra.fila &&
+                columna == otra.columna;
     }
 
-    @Override
-    /**
-     * Devuelve una representación en texto del objeto para mostrarlo fácilmente.
+    /** Devuelve la posición en formato texto
      */
+    @Override
     public String toString() {
-        return "(" + fila + "," + columna + ")"; // devuelve el resultado calculado por el método.
+
+        return "(" + fila + "," + columna + ")";
     }
 }
-
