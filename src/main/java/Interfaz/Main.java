@@ -1,36 +1,32 @@
-package Interfaz; // indica el paquete al que pertenece esta clase.
+package Interfaz;
 
-import javafx.application.Application; // importa una clase externa necesaria para este archivo.
-import javafx.scene.Scene; // importa una clase externa necesaria para este archivo.
-import javafx.stage.Stage; // importa una clase externa necesaria para este archivo.
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-/**
- * Clase de arranque de la aplicación JavaFX. Crea la ventana principal y lanza la interfaz gráfica.
- *
- * Comentarios añadidos para explicar la función de la clase, sus variables
- * y los bloques principales de código sin cambiar la lógica original.
+/** Clase de arranque de la aplicación JavaFX. Actúa como el "lanzador" del juego, despertando el motor gráfico y preparando el lienzo donde se jugará
  */
-public class Main extends Application { // declara una clase que agrupa datos y métodos relacionados.
+public class Main extends Application {
 
     @Override
-    /**
-     * Metodo principal de JavaFX que se ejecuta al abrir la aplicación.
+    /** Punto de partida del entorno gráfico de JavaFX. Se encarga de levantar el escenario y encajar la interfaz de la mazmorra
      */
     public void start(Stage stage) {
 
-        VentanaJuego ventana = new VentanaJuego(); // crea un nuevo objeto para poder usarlo después.
+        // invoca y construye la pantalla del juego (inicializa el mapa, botones de acción e inventario)
+        VentanaJuego ventana = new VentanaJuego();
 
-        Scene escena = new Scene(ventana.getRoot(), 1200, 700); // crea un nuevo objeto para poder usarlo después.
+        // define las dimensiones de la ventana de juego y le introduce la interfaz
+        Scene escena = new Scene(ventana.getRoot(), 1200, 700);
 
-        stage.setTitle("Juego de Habitaciones"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        stage.setScene(escena); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        stage.show(); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        stage.setTitle("Juego de Habitaciones - Dungeon Crawler"); // título que aparecerá en la barra superior de la ventana
+        stage.setScene(escena); // monta la escena con los gráficos del juego en el escenario principal
+        stage.show(); // despierta la ventana y la hace visible para que el jugador pueda empezar la partida
     }
 
-    /**
-     * Punto de entrada del programa.
+    /** El metodo de entrada estándar de Java. Sirve como el interruptor de encendido que le dice al sistema operativo que ejecute el motor gráfico
      */
     public static void main(String[] args) {
-        launch(args); // ejecuta una llamada a un método para realizar una acción concreta.
+        launch(args); // pone en marcha la infraestructura de JavaFX y llama automáticamente al metodo 'start'
     }
 }
