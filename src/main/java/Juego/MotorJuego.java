@@ -34,6 +34,7 @@ public class MotorJuego {
 
         entrada.colocarObjeto(0, 1, new Objeto(Objeto.Tipo.POCION_VIDA, "Pocion pequena", "+15 vida", 15));
         entrada.colocarEnemigo(2, 3, new Enemigo(Enemigo.Tipo.GOBLIN));
+        sala.colocarEnemigo(2, 4, new Enemigo(Enemigo.Tipo.LADRON));
         entrada.colocarPuerta(4, 4, "Sala");
         entrada.colocarTrampa(3, 1);
 
@@ -42,6 +43,7 @@ public class MotorJuego {
         sala.colocarPuerta(5, 5, "Salida");
         sala.colocarPuerta(0, 0, "Entrada");
 
+        salida.colocarEnemigo(0, 3, new Enemigo(Enemigo.Tipo.DRAGON));
         salida.colocarEnemigo(1, 2, new Enemigo(Enemigo.Tipo.ESQUELETO));
         salida.colocarSalida(3, 4);
         salida.colocarPuerta(0, 0, "Sala");

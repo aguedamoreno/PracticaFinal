@@ -1,280 +1,274 @@
-package Juego; // indica el paquete al que pertenece esta clase.
-import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa necesaria para este archivo.
-import Juego.listas.Cola; // importa una clase externa necesaria para este archivo.
+package Juego;
 
-import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa necesaria para este archivo.
+import Juego.listas.ListaSimplementeEnlazada; // Lo usamos para guardar vértices, aristas y resultados sin usar ArrayList
+import Juego.listas.Cola; // Lo usamos en el algoritmo BFS para recorrer el grafo por niveles
 
-/**
- * Clase que representa el mapa general como un grafo de habitaciones, con vértices, aristas, pesos y algoritmos de búsqueda de caminos.
- *
- * Comentarios añadidos para explicar la función de la clase, sus variables
- * y los bloques principales de código sin cambiar la lógica original.
+/** Clase Grafo, que en el juego representa el mapa completo:
+ * Cada vértice puede ser una habitación.
+ * Cada arista representa una conexión entre habitaciones, por ejemplo una puerta.
+ * El peso sirve para calcular caminos, por ejemplo con Dijkstra.
  */
-public class Grafo { // declara una clase que agrupa datos y métodos relacionados.
-    private class Arista {
-        int destino;
-        double peso; // Para algoritmos como Dijkstra
+public class Grafo {
+    /** Clase interna Arista, representa una conexión desde un vértice hacia otro
+     * Por ejemplo: Entrada ---- Sala
+     * Si Entrada tiene una arista hacia Sala, destino guardará el índice de Sala
+     */
+    private static class Arista {
+        int destino; // Índice del vértice al que lleva esta conexión
+        double peso; // Coste de moverse por esta conexión, en Dijkstra lo usamos para calcular caminos mínimos
 
+        /** Constructor de una arista
+         */
         Arista(int destino, double peso) {
-            this.destino = destino; // guarda el valor recibido dentro del atributo del objeto actual.
-            this.peso = peso; // guarda el valor recibido dentro del atributo del objeto actual.
+            this.destino = destino; // Guarda el índice del vértice destino
+            this.peso = peso; // Guarda el coste de esta conexión
         }
     }
 
+    /** Clase interna Vertice, representa un nodo del grafo
+     * En el juego, cada vértice guarda una Habitacion
+     */
+    private static class Vertice {
 
+        ListaSimplementeEnlazada<Arista> aristas; // Lista de conexiones que salen desde este vértice
+        Object datos; // Información guardada en el vértice, que suele ser una Habitacion
 
-    private class Vertice {
-        ListaSimplementeEnlazada<Arista> aristas;
-        Object datos; // Para almacenar datos asociados al vértice (ej: Habitación)
-
+        /** Constructor de un vértice
+         */
         Vertice(Object datos) {
-            this.datos = datos; // guarda el valor recibido dentro del atributo del objeto actual.
-            this.aristas = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
+            this.datos = datos; // Guarda la habitación u objeto asociado al vértice
+            this.aristas = new ListaSimplementeEnlazada<>(); // Crea la lista vacía de conexiones de este vértice
         }
     }
 
-    private ListaSimplementeEnlazada<Vertice> vertices; // declara un atributo/campo de la clase donde se guarda estado.
-    private boolean dirigido; // declara un atributo/campo de la clase donde se guarda estado.
-    private int size; // declara un atributo/campo de la clase donde se guarda estado.
+    private final ListaSimplementeEnlazada<Vertice> vertices; // Lista de todos los vértices/habitaciones del mapa
 
-    /**
-     * Constructor
-     * @param dirigido true si el grafo es dirigido, false si no dirigido
+    private final boolean dirigido; // Indica si las conexiones tienen una sola dirección o si se puede ir y volver
+
+    private int size; // Número total de vértices que tiene el grafo
+
+    /** Constructor principal del grafo
      */
     public Grafo(boolean dirigido) {
-        this.vertices = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        this.dirigido = dirigido; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.size = 0; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.vertices = new ListaSimplementeEnlazada<>(); // Inicializa la lista de habitaciones/vértices vacía
+        this.dirigido = dirigido; // Guarda si el grafo será dirigido o no dirigido
+        this.size = 0; // Al crear el grafo todavía no hay habitaciones añadidas
     }
 
-    /**
-     * Constructor que inicializa los atributos principales del objeto.
+    /** Constructor del grafo por defecto
      */
     public Grafo() {
-        this(false); // Por defecto, grafo no dirigido
+        this(false); // Llama al otro constructor pasando false, ya que crea un grafo no dirigido por defecto
+        // Porque normalmente una puerta conecta dos habitaciones en ambos sentidos
     }
 
-    /**
-     * Añade un vértice al grafo
-     * @param datos Datos asociados al vértice
-     * @return Índice del vértice añadido
-     */
+    /** Metodo que añade una nueva habitación/vértice al grafo
+    */
     public int agregarVertice(Object datos) {
-        vertices.insertarUltimo(new Vertice(datos)); // crea un nuevo objeto para poder usarlo después.
-        size++;
-        return size - 1; // devuelve el resultado calculado por el método.
+        vertices.insertarUltimo(new Vertice(datos)); // Crea un vértice con esos datos y lo añade al final de la lista
+        size++; // Aumenta el contador porque ahora hay un vértice más
+        return size - 1; // Devuelve el índice del nuevo vértice. Si hay 3 vértices, el último índice es 2
     }
 
-    /**
-     * Añade una arista entre dos vértices
-     * @param origen Índice del vértice origen
-     * @param destino Índice del vértice destino
-     * @param peso Peso de la arista (1.0 por defecto para no ponderado)
-     * @throws IndexOutOfBoundsException Si algún índice es inválido
+    /** Metodo que añade una conexión entre dos vértices (es decir, que dos habitaciones están conectadas)
      */
     public void agregarArista(int origen, int destino, double peso) {
-        validarIndiceVertice(origen); // ejecuta una llamada a un método para realizar una acción concreta.
-        validarIndiceVertice(destino); // ejecuta una llamada a un método para realizar una acción concreta.
+        validarIndiceVertice(origen); // Comprueba que el índice de origen existe
+        validarIndiceVertice(destino); // Comprueba que el índice de destino existe
 
-        vertices.obtener(origen).aristas.insertarUltimo(new Arista(destino, peso)); // crea un nuevo objeto para poder usarlo después.
+        vertices.obtener(origen).aristas.insertarUltimo(new Arista(destino, peso)); // Añade al origen una arista hacia destino
 
-        // Si es no dirigido, añadir la arista inversa
-        if (!dirigido) { // comprueba una condición para decidir qué camino sigue el programa.
-            vertices.obtener(destino).aristas.insertarUltimo(new Arista(origen, peso)); // crea un nuevo objeto para poder usarlo después.
+        if (!dirigido) { // Si el grafo no es dirigido, la conexión también existe en sentido contrario
+            vertices.obtener(destino).aristas.insertarUltimo(new Arista(origen, peso));
         }
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Metodo que añade una conexión sin indicar peso (Usa peso 1.0 por defecto)
      */
     public void agregarArista(int origen, int destino) {
-        agregarArista(origen, destino, 1.0); // Peso por defecto
+        agregarArista(origen, destino, 1.0); // Llama al metodo anterior usando peso 1.0.
     }
 
-    /**
-     * Obtiene los vértices adyacentes a un vértice dado
-     * @param vertice Índice del vértice
-     * @return Lista de índices de vértices adyacentes
-     * @throws IndexOutOfBoundsException Si el índice es inválido
+    /** Metodo que devuelve los vértices conectados directamente con uno dado (por ejemplo, si Entrada conecta con Sala, Sala será adyacente a Entrada)
      */
     public ListaSimplementeEnlazada<Integer> obtenerAdyacentes(int vertice) {
-        validarIndiceVertice(vertice); // ejecuta una llamada a un método para realizar una acción concreta.
-        ListaSimplementeEnlazada<Integer> resultado = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        ListaSimplementeEnlazada<Arista> aristas = vertices.obtener(vertice).aristas; // asigna o actualiza un valor necesario para el estado del programa.
+        validarIndiceVertice(vertice); // Comprueba que el vértice existe.
+        ListaSimplementeEnlazada<Integer> resultado = new ListaSimplementeEnlazada<>(); // Aquí se guardarán los índices adyacentes
+        ListaSimplementeEnlazada<Arista> aristas = vertices.obtener(vertice).aristas; // Obtiene las conexiones del vértice indicado
 
-        // Usamos el iterador de tu ListaSimplementeEnlazada
-        for (int i = 0; i < aristas.tamaño(); i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            Arista arista = aristas.obtener(i); // asigna o actualiza un valor necesario para el estado del programa.
-            resultado.insertarUltimo(arista.destino); // ejecuta una llamada a un método para realizar una acción concreta.
+        for (int i = 0; i < aristas.tamaño(); i++) { // Recorre todas las aristas de ese vértice
+            Arista arista = aristas.obtener(i); // Obtiene una conexión concreta
+            resultado.insertarUltimo(arista.destino); // Guarda el índice del vértice destino
         }
-        return resultado; // devuelve el resultado calculado por el método.
+
+        return resultado; // Devuelve la lista de habitaciones conectadas
     }
 
-    /**
-     * Obtiene el peso de una arista
-     * @param origen Índice del vértice origen
-     * @param destino Índice del vértice destino
-     * @return Peso de la arista, o Double.POSITIVE_INFINITY si no existe
+    /** Metodo que busca el peso de la conexión entre dos vértices
      */
     public double obtenerPesoArista(int origen, int destino) {
-        validarIndiceVertice(origen); // ejecuta una llamada a un método para realizar una acción concreta.
-        validarIndiceVertice(destino); // ejecuta una llamada a un método para realizar una acción concreta.
+        validarIndiceVertice(origen);
+        validarIndiceVertice(destino);
 
-        ListaSimplementeEnlazada<Arista> aristas = vertices.obtener(origen).aristas; // asigna o actualiza un valor necesario para el estado del programa.
-        for (int i = 0; i < aristas.tamaño(); i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            Arista arista = aristas.obtener(i); // asigna o actualiza un valor necesario para el estado del programa.
-            if (arista.destino == destino) { // comprueba una condición para decidir qué camino sigue el programa.
-                return arista.peso; // devuelve el resultado calculado por el método.
+        ListaSimplementeEnlazada<Arista> aristas = vertices.obtener(origen).aristas; // Obtiene las conexiones del origen
+
+        for (int i = 0; i < aristas.tamaño(); i++) { // Recorre todas las conexiones del origen
+            Arista arista = aristas.obtener(i); // Obtiene una arista concreta
+
+            if (arista.destino == destino) { // Si esa arista llega justo al destino buscado
+                return arista.peso; // Devuelve el peso de esa conexión
             }
         }
-        return Double.POSITIVE_INFINITY; // No hay arista directa
+
+        return Double.POSITIVE_INFINITY; // Si no hay conexión directa, devuelve infinito
     }
 
-    /**
-     * Algoritmo de BFS (Búsqueda en Anchura)
-     * Útil para encontrar todas las casillas alcanzables dentro de un rango de movimiento
-     * @param inicio Índice del vértice de inicio
-     * @param maxDistancia Distancia máxima a explorar (en número de aristas)
-     * @return Lista de vértices alcanzables dentro de maxDistancia
+    /** BFS: búsqueda en anchura
+     * Sirve para explorar el grafo por capas: primero distancia 0, luego distancia 1, luego distancia 2...
      */
     public ListaSimplementeEnlazada<Integer> bfs(int inicio, int maxDistancia) {
-        validarIndiceVertice(inicio); // ejecuta una llamada a un método para realizar una acción concreta.
+        validarIndiceVertice(inicio);
 
-        ListaSimplementeEnlazada<Integer> resultado = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        boolean[] visitados = new boolean[size]; // crea un nuevo objeto para poder usarlo después.
-        Cola<Integer> cola = new Cola<>(); // crea un nuevo objeto para poder usarlo después.
-        Cola<Integer> distanciaCola = new Cola<>(); // crea un nuevo objeto para poder usarlo después.
+        ListaSimplementeEnlazada<Integer> resultado = new ListaSimplementeEnlazada<>(); // Lista final de vértices alcanzables
 
-        cola.enqueue(inicio); // ejecuta una llamada a un método para realizar una acción concreta.
-        distanciaCola.enqueue(0); // ejecuta una llamada a un método para realizar una acción concreta.
-        visitados[inicio] = true; // asigna o actualiza un valor necesario para el estado del programa.
+        boolean[] visitados = new boolean[size]; // Marca qué vértices ya se han visitado para no repetirlos
 
-        while (!cola.estaVacia()) { // bucle que se repite mientras la condición sea verdadera.
-            int actual = cola.dequeue(); // asigna o actualiza un valor necesario para el estado del programa.
-            int dist = distanciaCola.dequeue(); // asigna o actualiza un valor necesario para el estado del programa.
+        Cola<Integer> cola = new Cola<>(); // Cola con los vértices pendientes de explorar
 
-            if (dist <= maxDistancia) { // comprueba una condición para decidir qué camino sigue el programa.
-                resultado.insertarUltimo(actual); // ejecuta una llamada a un método para realizar una acción concreta.
+        Cola<Integer> distanciaCola = new Cola<>(); // Cola paralela que guarda la distancia de cada vértice
 
-                // Si aún podemos explorar más lejos
-                if (dist < maxDistancia) { // comprueba una condición para decidir qué camino sigue el programa.
-                    ListaSimplementeEnlazada<Integer> adyacentes = obtenerAdyacentes(actual); // asigna o actualiza un valor necesario para el estado del programa.
-                    for (int i = 0; i < adyacentes.tamaño(); i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                        int adyacente = adyacentes.obtener(i); // asigna o actualiza un valor necesario para el estado del programa.
-                        if (!visitados[adyacente]) { // comprueba una condición para decidir qué camino sigue el programa.
-                            visitados[adyacente] = true; // asigna o actualiza un valor necesario para el estado del programa.
-                            cola.enqueue(adyacente); // ejecuta una llamada a un método para realizar una acción concreta.
-                            distanciaCola.enqueue(dist + 1); // ejecuta una llamada a un método para realizar una acción concreta.
+        cola.enqueue(inicio); // Mete el vértice inicial en la cola
+
+        distanciaCola.enqueue(0); // El vértice inicial está a distancia 0
+
+        visitados[inicio] = true; // Marca el inicio como visitado
+
+        while (!cola.estaVacia()) { // Mientras queden vértices pendientes de explorar
+            int actual = cola.dequeue(); // Saca el siguiente vértice
+            int dist = distanciaCola.dequeue(); // Saca la distancia correspondiente a ese vértice
+
+            if (dist <= maxDistancia) { // Si está dentro del límite permitido
+                resultado.insertarUltimo(actual); // Lo añade a la lista de alcanzables
+
+                if (dist < maxDistancia) { // Si aún puede seguir explorando más lejos
+                    ListaSimplementeEnlazada<Integer> adyacentes = obtenerAdyacentes(actual); // Obtiene vecinos del vértice actual
+
+                    for (int i = 0; i < adyacentes.tamaño(); i++) { // Recorre cada vecino
+                        int adyacente = adyacentes.obtener(i); // Obtiene el índice del vecino
+
+                        if (!visitados[adyacente]) { // Si ese vecino todavía no se había visitado
+                            visitados[adyacente] = true; // Lo marca como visitado
+                            cola.enqueue(adyacente); // Lo mete en la cola para explorarlo después
+                            distanciaCola.enqueue(dist + 1); // Su distancia es una más que la del vértice actual
                         }
                     }
                 }
             }
         }
-        return resultado; // devuelve el resultado calculado por el método.
+
+        return resultado; // Devuelve todos los vértices alcanzables dentro de la distancia máxima
     }
 
-    /**
-     * Algoritmo de Dijkstra para encontrar el camino más corto
-     * @param inicio Índice del vértice de inicio
-     * @param fin Índice del vértice de destino
-     * @return Array con [distancia, camino] o null si no hay camino
-     *         El camino es una lista de índices de vértices desde inicio hasta fin
-     */
+    /** Dijkstra: busca el camino más corto entre dos habitaciones del grafo
+    */
     public Object[] dijkstra(int inicio, int fin) {
-        validarIndiceVertice(inicio); // ejecuta una llamada a un método para realizar una acción concreta.
-        validarIndiceVertice(fin); // ejecuta una llamada a un método para realizar una acción concreta.
+        validarIndiceVertice(inicio);
+        validarIndiceVertice(fin);
 
-        double[] distancias = new double[size]; // crea un nuevo objeto para poder usarlo después.
-        int[] anteriores = new int[size]; // crea un nuevo objeto para poder usarlo después.
-        boolean[] visitados = new boolean[size]; // crea un nuevo objeto para poder usarlo después.
+        double[] distancias = new double[size]; // Guarda la mejor distancia conocida hasta cada vértice
 
-        for (int i = 0; i < size; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            distancias[i] = Double.POSITIVE_INFINITY; // asigna o actualiza un valor necesario para el estado del programa.
-            anteriores[i] = -1; // asigna o actualiza un valor necesario para el estado del programa.
+        int[] anteriores = new int[size]; // Guarda desde qué vértice se llegó a cada uno para reconstruir el camino
+
+        boolean[] visitados = new boolean[size]; // Marca qué vértices ya quedaron cerrados/finalizados
+
+        for (int i = 0; i < size; i++) { // Inicializa todos los vértices
+            distancias[i] = Double.POSITIVE_INFINITY; // Al principio no se sabe llegar a ninguno
+            anteriores[i] = -1; // -1 significa que todavía no tiene vértice anterior
         }
-        distancias[inicio] = 0; // asigna o actualiza un valor necesario para el estado del programa.
 
-        // Cola de prioridad simple usando búsqueda lineal (para no complicar)
-        for (int i = 0; i < size; i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            // Encontrar el vértice no visitado con distancia mínima
-            int u = -1; // asigna o actualiza un valor necesario para el estado del programa.
-            double minDist = Double.POSITIVE_INFINITY; // asigna o actualiza un valor necesario para el estado del programa.
-            for (int v = 0; v < size; v++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                if (!visitados[v] && distancias[v] < minDist) { // comprueba una condición para decidir qué camino sigue el programa.
-                    minDist = distancias[v]; // asigna o actualiza un valor necesario para el estado del programa.
-                    u = v; // asigna o actualiza un valor necesario para el estado del programa.
+        distancias[inicio] = 0; // La distancia desde inicio hasta sí mismo es 0
+
+        for (int i = 0; i < size; i++) { // Como mucho se procesan todos los vértices una vez
+            int u = -1; // Guardará el vértice no visitado con menor distancia
+
+            double minDist = Double.POSITIVE_INFINITY; // Mejor distancia encontrada en esta vuelta
+
+            for (int v = 0; v < size; v++) { // Busca entre todos los vértices
+                if (!visitados[v] && distancias[v] < minDist) { // Si no está visitado y su distancia es menor
+                    minDist = distancias[v]; // Actualiza la mejor distancia
+                    u = v; // Guarda ese vértice como candidato
                 }
             }
 
-            if (u == -1) break; // No quedan vértices alcanzables
-            if (u == fin) break; // Llegamos al destino
+            if (u == -1) break; // Si no se encontró ninguno, ya no quedan vértices alcanzables
 
-            visitados[u] = true; // asigna o actualiza un valor necesario para el estado del programa.
+            if (u == fin) break; // Si ya llegamos al destino, no hace falta seguir
 
-            // Actualizar distancias de los vecinos
-            ListaSimplementeEnlazada<Integer> adyacentes = obtenerAdyacentes(u); // asigna o actualiza un valor necesario para el estado del programa.
-            for (int j = 0; j < adyacentes.tamaño(); j++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-                int v = adyacentes.obtener(j); // asigna o actualiza un valor necesario para el estado del programa.
-                if (!visitados[v]) { // comprueba una condición para decidir qué camino sigue el programa.
-                    double alternativa = distancias[u] + obtenerPesoArista(u, v); // asigna o actualiza un valor necesario para el estado del programa.
-                    if (alternativa < distancias[v]) { // comprueba una condición para decidir qué camino sigue el programa.
-                        distancias[v] = alternativa; // asigna o actualiza un valor necesario para el estado del programa.
-                        anteriores[v] = u; // asigna o actualiza un valor necesario para el estado del programa.
+            visitados[u] = true; // Marca ese vértice como visitado
+
+            ListaSimplementeEnlazada<Integer> adyacentes = obtenerAdyacentes(u); // Obtiene los vecinos de u
+
+            for (int j = 0; j < adyacentes.tamaño(); j++) { // Recorre sus vecinos
+                int v = adyacentes.obtener(j); // Obtiene un vecino concreto
+
+                if (!visitados[v]) { // Solo intenta mejorar vecinos no procesados
+                    double alternativa = distancias[u] + obtenerPesoArista(u, v); // Distancia hasta u + peso de ir de u a v
+
+                    if (alternativa < distancias[v]) { // Si este camino es mejor que el que tenía antes
+                        distancias[v] = alternativa; // Actualiza la mejor distancia conocida
+                        anteriores[v] = u; // Guarda que para llegar a v se viene desde u
                     }
                 }
             }
         }
 
-        // Reconstruir camino si existe
-        if (distancias[fin] == Double.POSITIVE_INFINITY) { // comprueba una condición para decidir qué camino sigue el programa.
-            return null; // No hay camino
+        if (distancias[fin] == Double.POSITIVE_INFINITY) { // Si el destino sigue en infinito, no hay camino
+            return null; // Devuelve null porque no se puede llegar
         }
 
-        ListaSimplementeEnlazada<Integer> camino = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        for (int actual = fin; actual != -1; actual = anteriores[actual]) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            camino.insertarPrimero(actual); // Insertar al inicio para invertir el orden
+        ListaSimplementeEnlazada<Integer> camino = new ListaSimplementeEnlazada<>(); // Lista donde se guardará el camino final
+
+        for (int actual = fin; actual != -1; actual = anteriores[actual]) { // Va desde el final hacia atrás usando anteriores
+            camino.insertarPrimero(actual); // Inserta al principio para que el camino quede en orden inicio -> fin
         }
 
-        return new Object[]{distancias[fin], camino}; // crea un nuevo objeto para poder usarlo después.
+        return new Object[]{distancias[fin], camino}; // Devuelve distancia total y camino encontrado
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Metodo que comprueba que un índice de vértice sea válido.
      */
     private void validarIndiceVertice(int indice) {
-        if (indice < 0 || indice >= size) { // comprueba una condición para decidir qué camino sigue el programa.
-            throw new IndexOutOfBoundsException("Índice de vértice inválido: " + indice + // lanza una excepción para avisar de que la acción no es válida.
-                    ". Tamaño del grafo: " + size); // ejecuta una llamada a un método para realizar una acción concreta.
+        if (indice < 0 || indice >= size) { // Si el índice es negativo o mayor/igual que size, no existe
+            throw new IndexOutOfBoundsException(
+                    "Índice de vértice inválido: " + indice +
+                            ". Tamaño del grafo: " + size
+            ); // Lanza un error explicando qué índice falló
         }
     }
 
-    /**
-     * Método getter que devuelve el valor actual de un atributo.
+    /** Metodo que devuelve cuántos vértices/habitaciones tiene el grafo
      */
     public int getSize() {
-        return size; // devuelve el resultado calculado por el método.
+        return size; // Devuelve el número de vértices guardados
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Metodo que indica si el grafo está vacío
      */
     public boolean estaVacio() {
-        return size == 0; // devuelve el resultado calculado por el método.
+        return size == 0; // Devuelve true si no hay ningún vértice
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Metodo que devuelve los datos guardados dentro de un vértice
      */
     public Object obtenerDatosVertice(int indice) {
-        validarIndiceVertice(indice); // ejecuta una llamada a un método para realizar una acción concreta.
-        return vertices.obtener(indice).datos; // devuelve el resultado calculado por el método.
+        validarIndiceVertice(indice); // Comprueba que el índice existe
+        return vertices.obtener(indice).datos; // Devuelve la habitación u objeto guardado en ese vértice
     }
 
-    /**
-     * Método de apoyo usado por la clase para completar la lógica del juego.
+    /** Metodo que cambia los datos guardados en un vértice
      */
     public void establecerDatosVertice(int indice, Object datos) {
-        validarIndiceVertice(indice); // ejecuta una llamada a un método para realizar una acción concreta.
-        vertices.obtener(indice).datos = datos; // asigna o actualiza un valor necesario para el estado del programa.
+        validarIndiceVertice(indice);
+        vertices.obtener(indice).datos = datos; // Sustituye los datos guardados en ese vértice
     }
 }
