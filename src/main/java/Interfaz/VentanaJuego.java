@@ -265,7 +265,7 @@ public class VentanaJuego {
 
                 // --- RENDERIZADO VISUAL SEGÚN EL CONTENIDO DE LA CELDA ---
                 if (i == jugador.getPosicionX() && j == jugador.getPosicionY()) {
-                    btnCelda.setText("🧍️"); // icono del jugador
+                    btnCelda.setText("\uD83E\uDD20️"); // icono del jugador
                     btnCelda.setStyle("-fx-background-color: #87CEEB; -fx-font-weight: bold;");
                 } else {
                     switch (celda.getTipo()) {
@@ -281,7 +281,7 @@ public class VentanaJuego {
                             btnCelda.setStyle("-fx-background-color: #FF6347;");
                             break;
                         case TRAMPA:
-                            btnCelda.setText("🕳️"); // foso, pinchos o peligro oculto
+                            btnCelda.setText("\uD83D\uDC80"); // foso, pinchos o peligro oculto
                             btnCelda.setStyle("-fx-background-color: #DDA0DD;");
                             break;
                         case PUERTA:
