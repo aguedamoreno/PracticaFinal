@@ -71,13 +71,13 @@ public class MotorJuego {
             throw new JuegoException("No puedes moverte después de haber realizado una acción.");
         }
 
-        // Obtener la habitación actual usando tu método real
+        // obtener la habitación actual usando tu metodo real
         Habitacion habActual = getHabitacionActual();
 
-        // Obtener la posición actual del jugador
+        // obtener la posición actual del jugador
         Posicion origen = new Posicion(jugador.getPosicionX(), jugador.getPosicionY());
 
-        // Validar si la celda destino está dentro de las alcanzables (MÁXIMO 2 EN CRUZ)
+        // validar si la celda destino está dentro de las alcanzables (MÁXIMO 2 EN CRUZ)
         ListaSimplementeEnlazada<Posicion> alcanzables = habActual.calcularPosicionesAlcanzables(origen, 2);
         boolean destinoValido = false;
 

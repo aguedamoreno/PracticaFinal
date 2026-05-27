@@ -3,11 +3,7 @@ import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa neces
 
 import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa necesaria para este archivo.
 
-/**
- * Clase que representa al jugador: vida, ataque, defensa, inventario, posición y operaciones para usar/equipar objetos y recibir daño.
- *
- * Comentarios añadidos para explicar la función de la clase, sus variables
- * y los bloques principales de código sin cambiar la lógica original.
+/** Clase que representa al jugador: vida, ataque, defensa, inventario, posición y operaciones para usar/equipar objetos y recibir daño
  */
 public class Jugador { // declara una clase que agrupa datos y métodos relacionados.
     // Estadísticas básicas
