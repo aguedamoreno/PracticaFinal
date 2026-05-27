@@ -248,69 +248,34 @@ public class Habitacion {
         return posiciones;
     }
 
-    /** Calcula las posiciones alcanzables por el jugador en línea recta hasta una distancia máxima.
+    /** Calcula las posiciones alcanzables por el jugador usando movimiento compuesto.
+     * Permite combinaciones como bajar 2 y moverse 1 a la izquierda, pero sin contar diagonales como un único paso.
      */
     public ListaSimplementeEnlazada<Posicion> calcularPosicionesAlcanzables(
             Posicion origen,
             int distanciaMaxima
     ) {
 
-        // lista de posiciones alcanzables
         ListaSimplementeEnlazada<Posicion> alcanzables =
                 new ListaSimplementeEnlazada<>();
 
-        // si el origen es nulo devuelve lista vacía
         if (origen == null) {
             return alcanzables;
         }
 
+        int filaOrig = origen.getFila();
+        int colOrig = origen.getColumna();
 
-        int filaOrig = origen.getFila();    // guarda la fila de origen
+        for (int fila = 0; fila < filas; fila++) {
+            for (int columna = 0; columna < columnas; columna++) {
 
+                int distancia = Math.abs(fila - filaOrig) + Math.abs(columna - colOrig);
 
-        int colOrig = origen.getColumna();  // guarda la columna de origen
+                if (distancia <= distanciaMaxima) {
+                    Celda celda = getCelda(fila, columna);
 
-
-        alcanzables.insertarUltimo(origen); // la propia posición también cuenta
-
-        // direcciones posibles: arriba, abajo, izquierda y derecha
-        int[][] direcciones = {
-                {-1, 0},
-                {1, 0},
-                {0, -1},
-                {0, 1}
-        };
-
-        // recorre todas las direcciones
-        for (int[] dir : direcciones) {
-
-            // avanza hasta la distancia máxima
-            for (int d = 1; d <= distanciaMaxima; d++) {
-
-
-                int nuevaFila = filaOrig + (dir[0] * d);    // calcula la nueva fila
-
-
-                int nuevaCol = colOrig + (dir[1] * d);  // calcula la nueva columna
-
-                // comprueba si la posición existe
-                if (esPosicionValida(nuevaFila, nuevaCol)) {
-
-
-                    Celda celda = getCelda(nuevaFila, nuevaCol);    // obtiene la celda destino
-
-                    // si está libre se añade a las alcanzables
-                    if (celda != null &&
-                            celda.estaLibreParaMovimiento()) {
-
-                        alcanzables.insertarUltimo(
-                                new Posicion(nuevaFila, nuevaCol)
-                        );
-
-                    } else {
-
-                        // si encuentra un obstáculo deja de avanzar
-                        break;
+                    if (celda != null && celda.estaLibreParaMovimiento()) {
+                        alcanzables.insertarUltimo(new Posicion(fila, columna));
                     }
                 }
             }
@@ -416,3 +381,4 @@ class Posicion {
         return "(" + fila + "," + columna + ")";
     }
 }
+

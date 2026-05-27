@@ -295,13 +295,19 @@ public class VentanaJuego {
                     }
                 }
 
+                // Si la casilla es alcanzable para moverse, se marca solo con un borde naranja clarito.
+                if (!(i == jugador.getPosicionX() && j == jugador.getPosicionY())
+                        && motor.esCeldaAlcanzableParaJugador(i, j)) {
+                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #FDBA74; -fx-border-width: 2px;");
+                }
+
                 // --- GESTIÓN DE CLICKS (SELECCIÓN TÁCTICA DE CASILLAS) ---
                 final int f = i;
                 final int c = j;
                 btnCelda.setOnAction(e -> {
                     // si el jugador pincha una celda teniendo otra seleccionada, le quita el borde de selección a la anterior
                     if (botonSeleccionadoAnterior != null) {
-                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: red; -fx-border-width: 2px;", ""));
+                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: #0F172A; -fx-border-width: 2px;", ""));
                     }
 
                     // registra las coordenadas de la celda elegida como objetivo de la próxima acción
@@ -405,3 +411,4 @@ public class VentanaJuego {
         return root;
     }
 }
+

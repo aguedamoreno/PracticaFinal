@@ -108,12 +108,12 @@ public class MotorJuego {
         jugador.setPosicionX(0); // Coloca al jugador en la fila 0
         jugador.setPosicionY(0); // Coloca al jugador en la columna 0
 
-        return new MotorJuego(mapa, jugador, iEntrada, 50);
+        return new MotorJuego(mapa, jugador, iEntrada, 30);
         // Devuelve un motor ya preparado: mapa creado, jugador creado, empieza en Entrada y tiene 30 turnos
     }
 
     /** Metodo que mueve al jugador a una nueva casilla
-    */
+     */
     public void moverJugador(int nuevaFila, int nuevaColumna) throws JuegoException {
 
         if (derrota || victoria) {
@@ -137,7 +137,7 @@ public class MotorJuego {
         Posicion origen = new Posicion(jugador.getPosicionX(), jugador.getPosicionY());
         // Crea una posición con la fila y columna actuales del jugador
 
-        ListaSimplementeEnlazada<Posicion> alcanzables = habActual.calcularPosicionesAlcanzables(origen, 2);
+        ListaSimplementeEnlazada<Posicion> alcanzables = habActual.calcularPosicionesAlcanzables(origen, jugador.getVelocidad());
         // Calcula las posiciones a las que puede llegar el jugador, se limita a máximo 2 casillas en cruz: arriba, abajo, izquierda o derecha
 
         boolean destinoValido = false;
@@ -159,7 +159,7 @@ public class MotorJuego {
         }
 
         if (!destinoValido) {
-            throw new JuegoException("Movimiento inválido. Solo puedes moverte hasta 2 casillas en línea recta (arriba, abajo, izquierda, derecha).");
+            throw new JuegoException("Movimiento inválido. Solo puedes moverte a una casilla alcanzable según tu velocidad.");
         }
         // Si el destino no estaba en la lista de alcanzables, se cancela el movimiento
 
@@ -292,7 +292,7 @@ public class MotorJuego {
     }
 
     /** Metodo que permite al jugador recoger un objeto que esté en su misma casilla
-    */
+     */
     public void recogerObjetoAdyacente(int fila, int columna) throws JuegoException {
 
         // Comprueba que la partida sigue activa y no ha terminado
@@ -517,6 +517,22 @@ public class MotorJuego {
         );
     }
 
+    /** Comprueba si una casilla concreta está dentro de las posiciones a las que el jugador puede moverse.
+     */
+    public boolean esCeldaAlcanzableParaJugador(int fila, int columna) {
+        ListaSimplementeEnlazada<Posicion> alcanzables = getCeldasAlcanzables();
+
+        for (int i = 0; i < alcanzables.tamaño(); i++) {
+            Posicion p = alcanzables.obtener(i);
+
+            if (p.getFila() == fila && p.getColumna() == columna) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /** Metodo que calcula el camino mínimo desde la habitación actual hasta la habitación que tiene la salida
      */
     public Object[] getCaminoMinimoSalida() {
@@ -643,15 +659,15 @@ public class MotorJuego {
      */
     private int calcularDano(int ataque, int defensa) {
 
-        double aleatorio = 0.8 + Math.random() * 0.4;
-        // Genera un número decimal aleatorio entre 0,8 y 1,2, esto hace que el ataque pueda variar
+        double aleatorio = Math.random() * 2;
+        // Genera un número decimal aleatorio entre 0 y 2, esto hace que el ataque pueda variar bastante
 
         return Math.max(0, (int) Math.round(ataque * aleatorio - defensa));
         // Math.max(0, ...) evita que el daño sea negativo.
     }
 
     /** Metodo que calcula la distancia entre una posición y el jugador
-    */
+     */
     private int distanciaJugador(Posicion posicion) {
         return Math.abs(posicion.getFila() - jugador.getPosicionX()) + Math.abs(posicion.getColumna() - jugador.getPosicionY());
         // Math.abs devuelve el valor absoluto
@@ -659,7 +675,7 @@ public class MotorJuego {
     }
 
     /** Metodo que comprueba que una celda esté justo al lado del jugador
-    */
+     */
     private void validarAdyacente(int fila, int columna) throws JuegoException {
         // Primero comprueba que la posición exista dentro de la habitación
         if (!getHabitacionActual().esPosicionValida(fila, columna)) {
@@ -684,7 +700,7 @@ public class MotorJuego {
     }
 
     /** Metodo que resta un turno a la partida
-    */
+     */
     private void consumirTurno() {
         turnosRestantes--;
         // Resta 1 al contador de turno
@@ -763,7 +779,7 @@ public class MotorJuego {
     }
 
     /** Metodo que finaliza completamente el turno actual
-    */
+     */
     public void finalizarTurnoCompleto() {
         if (!victoria && !derrota) {
             // Solo procesa enemigos si la partida sigue activa; si ya ganó o perdió, los enemigos no deben actuar
@@ -1062,7 +1078,7 @@ public class MotorJuego {
     }
 
     /** Metodo que indica si el jugador ya se movió durante el turno actual
-    */
+     */
     public boolean isJugadorYaSeMovioEnEsteTurno() {
         return jugadorYaSeMovioEnEsteTurno;
         // Devuelve true si ya se movió y devuelve false si todavía puede moverse
