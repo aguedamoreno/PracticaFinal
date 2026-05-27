@@ -108,7 +108,7 @@ public class MotorJuego {
         jugador.setPosicionX(0); // Coloca al jugador en la fila 0
         jugador.setPosicionY(0); // Coloca al jugador en la columna 0
 
-        return new MotorJuego(mapa, jugador, iEntrada, 30);
+        return new MotorJuego(mapa, jugador, iEntrada, 50);
         // Devuelve un motor ya preparado: mapa creado, jugador creado, empieza en Entrada y tiene 30 turnos
     }
 
