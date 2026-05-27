@@ -3,78 +3,64 @@ import Juego.listas.ListaSimplementeEnlazada; // importa una clase externa neces
 
 /** Estructura de datos de árbol binario de búsqueda genérico. Permite insertar, buscar, eliminar y recorrer elementos ordenados.
  */
-/**
- * Clase que implementa un árbol binario de búsqueda genérico: guarda datos comparables y permite insertarlos, buscarlos, eliminarlos y recorrerlos en distintos órdenes.
- *
- * Comentarios añadidos para explicar la función de la clase, sus variables
- * y los bloques principales de código sin cambiar la lógica original.
- */
-public class ArbolBinario<T extends Comparable<T>> { // declara una clase que agrupa datos y métodos relacionados.
-    // Primer nodo del árbol; desde él se accede al resto de nodos.
-    private Nodo<T> raiz; // declara un atributo/campo de la clase donde se guarda estado.
-    // Número de elementos guardados en el árbol.
-    private int size; // declara un atributo/campo de la clase donde se guarda estado.
+public class ArbolBinario<T extends Comparable<T>> {
+    // Primer nodo del árbol, desde él se accede al resto de nodos
+    private Nodo<T> raiz;
+    // Número de elementos guardados en el árbol
+    private int size;
 
     /** Constructor de la clase Nodo, crea un nuevo Nodo del arbol binario
      */
-    private static class Nodo<T> { // declara una clase que agrupa datos y métodos relacionados.
+    private static class Nodo<T> {
         T dato;
-        // Nodo a los que podemos acceder
+        // Nodos a los que podemos acceder
         Nodo<T> izquierdo;
         Nodo<T> derecho;
 
         Nodo(T dato) {
-            this.dato = dato; // guarda el valor recibido dentro del atributo del objeto actual.
-            this.izquierdo = null; // guarda el valor recibido dentro del atributo del objeto actual.
-            this.derecho = null; // guarda el valor recibido dentro del atributo del objeto actual.
+            this.dato = dato; // guarda el valor recibido dentro del atributo del objeto actual
+            this.izquierdo = null;  // inicializamos los atributos
+            this.derecho = null;
         }
     }
 
-    /**
-     * Constructor que inicializa los atributos principales del objeto.
+    /** Constructor que inicializa los atributos principales del objeto
      */
     public ArbolBinario() {
-        this.raiz = null; // guarda el valor recibido dentro del atributo del objeto actual.
-        this.size = 0; // guarda el valor recibido dentro del atributo del objeto actual.
+        this.raiz = null;
+        this.size = 0;
     }
 
-    /**
-     * Inserta un elemento en el árbol binario de búsqueda
-     * @param dato Elemento a insertar
+    /** Metodo inserta un elemento en el árbol binario de búsqueda
      */
     public void insertar(T dato) {
-        raiz = insertarRecursivo(raiz, dato); // asigna o actualiza un valor necesario para el estado del programa.
+        raiz = insertarRecursivo(raiz, dato); // asigna o actualiza un valor necesario para el estado del programa
     }
 
-    /**
-     * Método auxiliar que baja recursivamente por el árbol hasta encontrar la posición correcta para insertar.
+    /** Metodo que baja recursivamente por el árbol hasta encontrar la posición correcta para insertar
      */
     private Nodo<T> insertarRecursivo(Nodo<T> actual, T dato) {
-        if (actual == null) { // comprueba una condición para decidir qué camino sigue el programa.
+        if (actual == null) { // comprueba si es o no vacío
             size++;
-            return new Nodo<>(dato); // crea un nuevo objeto para poder usarlo después.
+            return new Nodo<>(dato); // crea un nuevo objeto
         }
 
-        if (dato.compareTo(actual.dato) < 0) { // comprueba una condición para decidir qué camino sigue el programa.
-            actual.izquierdo = insertarRecursivo(actual.izquierdo, dato); // asigna o actualiza un valor necesario para el estado del programa.
-        } else if (dato.compareTo(actual.dato) > 0) {
-            actual.derecho = insertarRecursivo(actual.derecho, dato); // asigna o actualiza un valor necesario para el estado del programa.
+        if (dato.compareTo(actual.dato) < 0) { // si el dato es menor que 0, va hacia la izquierda
+            actual.izquierdo = insertarRecursivo(actual.izquierdo, dato); // actualiza el nodo actual
+        } else if (dato.compareTo(actual.dato) > 0) {   // si es mayor que 0, va hacia la derecha
+            actual.derecho = insertarRecursivo(actual.derecho, dato);
         }
-        // Si es igual, no insertamos duplicados
-        return actual; // devuelve el resultado calculado por el método.
+        // Si los datos son iguales, no lo insertar
+        return actual; // devuelve el resultado calculado por el metodo
     }
 
-    /**
-     * Busca un elemento en el árbol
-     * @param dato Elemento a buscar
-     * @return true si existe, false en caso contrario
+    /** Metodo que busca un elemento en el árbol
      */
     public boolean buscar(T dato) {
-        return buscarRecursivo(raiz, dato); // devuelve el resultado calculado por el método.
+        return buscarRecursivo(raiz, dato);
     }
 
-    /**
-     * Método auxiliar que busca recursivamente comparando el dato con cada nodo.
+    /** Metodo que busca recursivamente comparando el dato con cada nodo
      */
     private boolean buscarRecursivo(Nodo<T> actual, T dato) {
         if (actual == null) { // comprueba una condición para decidir qué camino sigue el programa.
