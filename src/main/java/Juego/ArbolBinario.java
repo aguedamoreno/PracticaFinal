@@ -63,170 +63,201 @@ public class ArbolBinario<T extends Comparable<T>> {
     /** Metodo que busca recursivamente comparando el dato con cada nodo
      */
     private boolean buscarRecursivo(Nodo<T> actual, T dato) {
-        if (actual == null) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
+        // Si llegamos a null, hemos bajado por donde debería estar el dato pero no existe
+        if (actual == null) {
+            return false;
         }
-
-        if (dato.equals(actual.dato)) { // comprueba una condición para decidir qué camino sigue el programa.
-            return true; // devuelve el resultado calculado por el método.
+        // equals comprueba si el dato buscado es igual al dato guardado en el nodo actual
+        if (dato.equals(actual.dato)) {
+            return true;
         }
-
-        if (dato.compareTo(actual.dato) < 0) { // comprueba una condición para decidir qué camino sigue el programa.
-            return buscarRecursivo(actual.izquierdo, dato); // devuelve el resultado calculado por el método.
+        // Si el dato buscado es menor, se busca solamente en la rama izquierda
+        if (dato.compareTo(actual.dato) < 0) {
+            return buscarRecursivo(actual.izquierdo, dato);
         } else {
-            return buscarRecursivo(actual.derecho, dato); // devuelve el resultado calculado por el método.
+            // Si no es menor y tampoco era igual, entonces es mayor y se busca por la derecha
+            return buscarRecursivo(actual.derecho, dato);
         }
     }
 
-    /**
-     * Recorrido inorden (izquierdo, raíz, derecho)
-     * @return Lista con los elementos en orden
+    /** Metodo que devuelve los elementos del árbol en orden ascendente, de menor a mayor
      */
     public ListaSimplementeEnlazada<T> inorden() {
-        ListaSimplementeEnlazada<T> resultado = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        inordenRecursivo(raiz, resultado); // ejecuta una llamada a un método para realizar una acción concreta.
-        return resultado; // devuelve el resultado calculado por el método.
+        // Lista del proyecto donde se irán guardando los datos encontrados durante el recorrido
+        ListaSimplementeEnlazada<T> resultado = new ListaSimplementeEnlazada<>();
+
+        // Se empieza el recorrido desde la raíz
+        inordenRecursivo(raiz, resultado);
+
+        // Devuelve la lista ya rellenada con los datos del árbol
+        return resultado;
     }
 
-    /**
-     * Recorre primero el subárbol izquierdo, luego el nodo actual y después el subárbol derecho.
+    /** Metodo que recorre el árbol en orden: izquierdo, nodo actual, derecho.
      */
     private void inordenRecursivo(Nodo<T> nodo, ListaSimplementeEnlazada<T> lista) {
-        if (nodo != null) { // comprueba una condición para decidir qué camino sigue el programa.
-            inordenRecursivo(nodo.izquierdo, lista); // ejecuta una llamada a un método para realizar una acción concreta.
-            lista.insertarUltimo(nodo.dato); // ejecuta una llamada a un método para realizar una acción concreta.
-            inordenRecursivo(nodo.derecho, lista); // ejecuta una llamada a un método para realizar una acción concreta.
+        // Si el nodo es vacío, no hay nada que recorrer en esta rama
+        if (nodo != null) {
+            // Primero se recorren todos los valores menores que el nodo actual
+            inordenRecursivo(nodo.izquierdo, lista);
+            // Después se añade el dato del nodo actual a la lista resultado
+            lista.insertarUltimo(nodo.dato);
+            // Por último se recorren todos los valores mayores que el nodo actual
+            inordenRecursivo(nodo.derecho, lista);
         }
     }
 
-    /**
-     * Recorrido preorden (raíz, izquierdo, derecho)
-     * @return Lista con los elementos en preorden
+    /** Metodo que devuelve los elementos del árbol empezando en el nodo actual y luego sus hijos
      */
     public ListaSimplementeEnlazada<T> preorden() {
-        ListaSimplementeEnlazada<T> resultado = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        preordenRecursivo(raiz, resultado); // ejecuta una llamada a un método para realizar una acción concreta.
-        return resultado; // devuelve el resultado calculado por el método.
+        // Lista donde se almacenarán los datos
+        ListaSimplementeEnlazada<T> resultado = new ListaSimplementeEnlazada<>();
+        // Se empieza a recorrer desde la raíz
+        preordenRecursivo(raiz, resultado);
+        // Devuelve la lista completa.
+        return resultado;
     }
 
-    /**
-     * Añade primero el nodo actual y luego recorre recursivamente sus hijos.
+    /** Metodo que recorre el árbol en orden: nodo actual, izquierdo, derecho
      */
     private void preordenRecursivo(Nodo<T> nodo, ListaSimplementeEnlazada<T> lista) {
-        if (nodo != null) { // comprueba una condición para decidir qué camino sigue el programa.
-            lista.insertarUltimo(nodo.dato); // ejecuta una llamada a un método para realizar una acción concreta.
-            preordenRecursivo(nodo.izquierdo, lista); // ejecuta una llamada a un método para realizar una acción concreta.
-            preordenRecursivo(nodo.derecho, lista); // ejecuta una llamada a un método para realizar una acción concreta.
+        // Si nodo es null, significa que esa rama no existe y no se hace nada
+        if (nodo != null) {
+            // Primero se añade el dato del nodo actual
+            lista.insertarUltimo(nodo.dato);
+            // Después se recorre el subárbol izquierdo
+            preordenRecursivo(nodo.izquierdo, lista);
+            // Finalmente se recorre el subárbol derecho.
+            preordenRecursivo(nodo.derecho, lista);
         }
     }
 
-    /**
-     * Recorrido postorden (izquierdo, derecho, raíz)
-     * @return Lista con los elementos en postorden
+    /** Metodo que devuelve los elementos del árbol empezando por los hijos y luego el nodo actual
      */
     public ListaSimplementeEnlazada<T> postorden() {
-        ListaSimplementeEnlazada<T> resultado = new ListaSimplementeEnlazada<>(); // crea un nuevo objeto para poder usarlo después.
-        postordenRecursivo(raiz, resultado); // ejecuta una llamada a un método para realizar una acción concreta.
-        return resultado; // devuelve el resultado calculado por el método.
+        // Lista donde se irán insertando los datos visitados
+        ListaSimplementeEnlazada<T> resultado = new ListaSimplementeEnlazada<>();
+        // Se empieza el recorrido desde la raíz
+        postordenRecursivo(raiz, resultado);
+        // Devuelve la lista con el recorrido completo
+        return resultado;
     }
 
-    /**
-     * Recorre primero los subárboles y añade el nodo actual al final.
-     */
+    /** Metodo que recorre el árbol en orden: izquierdo, derecho, nodo actual
+    */
     private void postordenRecursivo(Nodo<T> nodo, ListaSimplementeEnlazada<T> lista) {
-        if (nodo != null) { // comprueba una condición para decidir qué camino sigue el programa.
-            postordenRecursivo(nodo.izquierdo, lista); // ejecuta una llamada a un método para realizar una acción concreta.
-            postordenRecursivo(nodo.derecho, lista); // ejecuta una llamada a un método para realizar una acción concreta.
-            lista.insertarUltimo(nodo.dato); // ejecuta una llamada a un método para realizar una acción concreta.
+        // Si nodo es null, no hay datos que añadir
+        if (nodo != null) {
+            // Primero se recorre el hijo izquierdo
+            postordenRecursivo(nodo.izquierdo, lista);
+            // Después se recorre el hijo derecho
+            postordenRecursivo(nodo.derecho, lista);
+            // Al final se añade el dato del nodo actual
+            lista.insertarUltimo(nodo.dato);
         }
     }
 
-    /**
-     * Elimina un elemento del árbol
-     * @param dato Elemento a eliminar
-     * @return true si se eliminó, false si no existía
+    /** Metodo que elimina un dato del árbol
      */
     public boolean eliminar(T dato) {
-        if (!buscar(dato)) { // comprueba una condición para decidir qué camino sigue el programa.
-            return false; // devuelve el resultado calculado por el método.
+        // Si el dato no existe, no se puede eliminar
+        if (!buscar(dato)) {
+            return false;
         }
-        raiz = eliminarRecursivo(raiz, dato); // asigna o actualiza un valor necesario para el estado del programa.
+        // Si existe, se elimina empezando desde la raíz, y se puede actualizar la raíz si justo se elimina el nodo raíz
+        raiz = eliminarRecursivo(raiz, dato);
+        // Como se ha eliminado un dato real, se reduce el tamaño del árbol
         size--;
-        return true; // devuelve el resultado calculado por el método.
+        return true;
     }
 
-    /**
-     * Método auxiliar que localiza el nodo a borrar y reorganiza el árbol.
-     */
+    /** Metodo que busca el nodo que contiene el dato y lo elimina manteniendo la estructura del árbol
+     * Hay tres casos al eliminar:
+     * 1. Nodo sin hijos
+     * 2. Nodo con un solo hijo
+     * 3. Nodo con dos hijos
+    */
     private Nodo<T> eliminarRecursivo(Nodo<T> actual, T dato) {
-        if (actual == null) { // comprueba una condición para decidir qué camino sigue el programa.
-            return null; // devuelve el resultado calculado por el método.
+        // Si se llega a null, no hay nada que eliminar en esta rama
+        if (actual == null) {
+            return null;
         }
-
-        if (dato.compareTo(actual.dato) < 0) { // comprueba una condición para decidir qué camino sigue el programa.
-            actual.izquierdo = eliminarRecursivo(actual.izquierdo, dato); // asigna o actualiza un valor necesario para el estado del programa.
+        if (dato.compareTo(actual.dato) < 0) {
+            // Si el dato a eliminar es menor que el dato actual, estará en el subárbol izquierdo
+            actual.izquierdo = eliminarRecursivo(actual.izquierdo, dato);
         } else if (dato.compareTo(actual.dato) > 0) {
-            actual.derecho = eliminarRecursivo(actual.derecho, dato); // asigna o actualiza un valor necesario para el estado del programa.
-        } else {
-            // Nodo con solo un hijo o ningún hijo
-            if (actual.izquierdo == null) { // comprueba una condición para decidir qué camino sigue el programa.
-                return actual.derecho; // devuelve el resultado calculado por el método.
+            // Si el dato a eliminar es mayor que el dato actual, estará en el subárbol derecho
+            actual.derecho = eliminarRecursivo(actual.derecho, dato);
+        } else {    // Si no es menor ni mayor, entonces el dato es igual al actual
+            // CASO 1 :
+            // Si no tiene hijo izquierdo, se devuelve su hijo derecho
+            // Si derecho también es null, se elimina el nodo
+            // Si derecho no es null, el hijo derecho ocupa su lugar
+            if (actual.izquierdo == null) {
+                return actual.derecho;
             } else if (actual.derecho == null) {
-                return actual.izquierdo; // devuelve el resultado calculado por el método.
+                // CASO 2 :
+                // Si no tiene hijo derecho pero sí tiene izquierdo
+                // el hijo izquierdo ocupa el lugar del nodo eliminado
+                return actual.izquierdo;
             }
-
-            // Nodo con dos hijos: obtener el sucesor inorden (mínimo en subárbol derecho)
-            actual.dato = minValor(actual.derecho); // asigna o actualiza un valor necesario para el estado del programa.
-            actual.derecho = eliminarRecursivo(actual.derecho, actual.dato); // asigna o actualiza un valor necesario para el estado del programa.
+            // CASO 3:
+            // No se puede quitar directamente sin romper el árbol, así que se busca el valor más pequeño del subarbol derecho
+            actual.dato = minValor(actual.derecho);
+            // Después de copiar ese valor en el nodo actual, hay que eliminar el nodo original que contenía ese hijo en el subárbol derecho
+            actual.derecho = eliminarRecursivo(actual.derecho, actual.dato);
         }
-        return actual; // devuelve el resultado calculado por el método.
+        // Devuelve este nodo con sus hijos ya actualizados
+        return actual;
     }
 
-    /**
-     * Busca el valor mínimo dentro de un subárbol.
+    /** Metodo que obtiene el dato más pequeño dentro de un subárbol
      */
     private T minValor(Nodo<T> nodo) {
-        T minv = nodo.dato; // asigna o actualiza un valor necesario para el estado del programa.
-        while (nodo.izquierdo != null) { // bucle que se repite mientras la condición sea verdadera.
-            minv = nodo.izquierdo.dato; // asigna o actualiza un valor necesario para el estado del programa.
-            nodo = nodo.izquierdo; // asigna o actualiza un valor necesario para el estado del programa.
+        // Se empieza suponiendo que el mínimo es el dato del nodo recibido
+        T minv = nodo.dato;
+        // Mientras exista un hijo izquierdo, todavía hay un valor más pequeño
+        while (nodo.izquierdo != null) {
+            // El nuevo mínimo pasa a ser el dato del hijo izquierdo
+            minv = nodo.izquierdo.dato;
+            // Bajamos un nivel hacia la izquierda para seguir buscando
+            nodo = nodo.izquierdo;
         }
-        return minv; // devuelve el resultado calculado por el método.
+        // Cuando ya no hay más hijos izquierdos, minv contiene el menor valor
+        return minv;
     }
 
-    /**
-     * Obtiene la altura del árbol
-     * @return Altura del árbol (número de niveles)
+    /** Metodo que calcula la altura del árbol completo (un árbol vacío tiene altura -1)
      */
     public int altura() {
-        return alturaRecursiva(raiz); // devuelve el resultado calculado por el método.
+        return alturaRecursiva(raiz); // Calcula la altura empezando desde la raíz
     }
 
-    /**
-     * Calcula recursivamente la altura de cada subárbol.
+    /** Metodo que calcula la altura de un nodo de forma recursiva  (La altura de un nodo es: 1 + la mayor altura entre su subárbol izquierdo y su subárbol derecho)
      */
     private int alturaRecursiva(Nodo<T> nodo) {
-        if (nodo == null) { // comprueba una condición para decidir qué camino sigue el programa.
-            return -1; // devuelve el resultado calculado por el método.
+        // Caso base: si el nodo no existe, su altura se considera -1
+        if (nodo == null) {
+            return -1;
         }
-        int alturaIzq = alturaRecursiva(nodo.izquierdo); // asigna o actualiza un valor necesario para el estado del programa.
-        int alturaDer = alturaRecursiva(nodo.derecho); // asigna o actualiza un valor necesario para el estado del programa.
-        return Math.max(alturaIzq, alturaDer) + 1; // devuelve el resultado calculado por el método.
+        // Calcula la altura del subárbol izquierdo
+        int alturaIzq = alturaRecursiva(nodo.izquierdo);
+        // Calcula la altura del subárbol derecho
+        int alturaDer = alturaRecursiva(nodo.derecho);
+
+        // Se queda con la rama más alta y suma 1 para contar el nodo actual
+        return Math.max(alturaIzq, alturaDer) + 1;
     }
 
-    /**
-     * Devuelve cuántos elementos hay guardados.
+    /** Metodo que devuelve el número de elementos guardados en el árbol
      */
     public int size() {
-        return size; // devuelve el resultado calculado por el método.
+        return size; // Devuelve el contador actualizado por insertar() y eliminar()
     }
 
-    /**
-     * Indica si la estructura no contiene ningún elemento.
+    /** Metodo que comprueba si el árbol está vacío.
      */
     public boolean estaVacia() {
-        return size == 0; // devuelve el resultado calculado por el método.
+        return size == 0; // Si size es 0, no hay nodos guardados
     }
 }
-
-
