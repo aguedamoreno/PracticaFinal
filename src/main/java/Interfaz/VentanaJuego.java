@@ -1,414 +1,407 @@
-package Interfaz; // indica el paquete al que pertenece esta clase.
+package Interfaz;
 
-import Juego.*; // importa una clase externa necesaria para este archivo.
-import javafx.geometry.Insets; // importa una clase externa necesaria para este archivo.
-import javafx.scene.Parent; // importa una clase externa necesaria para este archivo.
-import javafx.scene.control.*; // importa una clase externa necesaria para este archivo.
-import javafx.scene.layout.*; // importa una clase externa necesaria para este archivo.
+import Juego.*;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 
-import java.io.IOException; // importa una clase externa necesaria para este archivo.
-import java.nio.file.Path; // importa una clase externa necesaria para este archivo.
-import java.nio.file.Paths; // importa una clase externa necesaria para este archivo.
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-/**
- * Clase que construye y actualiza la interfaz gráfica JavaFX: mapa, botones, inventario, estadísticas y mensajes.
- *
- * Comentarios añadidos para explicar la función de la clase, sus variables
- * y los bloques principales de código sin cambiar la lógica original.
+/** Clase que construye y actualiza la interfaz gráfica JavaFX: mapa, botones, inventario, estadísticas y mensajes
  */
-public class VentanaJuego { // declara una clase que agrupa datos y métodos relacionados
+public class VentanaJuego {
 
-    private BorderPane root; // declara un atributo/campo de la clase donde se guarda estado
-    private GridPane gridMapa; // declara un atributo/campo de la clase donde se guarda estado
-    private TextArea areaRegistro; // declara un atributo/campo de la clase donde se guarda estado
+    // --- CONTENEDORES PRINCIPALES DE LA FACHADA ---
+    private BorderPane root; // organiza la pantalla (Centro, Derecha, Abajo)
+    private GridPane gridMapa; // rejilla visual que representa el mapa bidimensional de la habitación
+    private TextArea areaRegistro; // cuadro de texto donde el jugador lee la bitácora de eventos del juego
 
-    private Label vidaLabel; // declara un atributo/campo de la clase donde se guarda estado
-    private Label ataqueLabel; // declara un atributo/campo de la clase donde se guarda estado
-    private Label defensaLabel; // declara un atributo/campo de la clase donde se guarda estado
-    private Label turnosLabel; // declara un atributo/campo de la clase donde se guarda estado
+    // --- INDICADORES DE ESTADO  ---
+    private Label vidaLabel; // muestra la salud actual y máxima del jugador
+    private Label ataqueLabel; // muestra el poder ofensivo total del jugador
+    private Label defensaLabel; // muestra la capacidad de mitigación de daño del jugador
+    private Label turnosLabel; // muestra la cuenta atrás de turnos antes de perder la partida
 
-    private ListView<String> inventarioView; // declara un atributo/campo de la clase donde se guarda estado
+    private ListView<String> inventarioView; // Lista desplegable con los objetos recogidos por el jugador
 
-    private Button moverBtn; // declara un atributo/campo de la clase donde se guarda estado
-    private Button atacarBtn; // declara un atributo/campo de la clase donde se guarda estado
-    private Button usarBtn; // declara un atributo/campo de la clase donde se guarda estado
-    private Button recogerBtn; // declara un atributo/campo de la clase donde se guarda estado
-    private Button pasarTurnoBtn; // declara un atributo/campo de la clase donde se guarda estado
-    private Button guardarBtn; // declara un atributo/campo de la clase donde se guarda estado
-    private Button cargarBtn; // declara un atributo/campo de la clase donde se guarda estado
+    // --- BOTONES DE INTERACCIÓN ---
+    private Button moverBtn; // botón para desplazar al héroe a la casilla seleccionada
+    private Button atacarBtn; // botón para iniciar un combate contra un monstruo adyacente
+    private Button usarBtn; // botón para consumir o equipar un objeto del inventario
+    private Button recogerBtn; // botón para levantar tesoros, llaves u objetos del suelo
+    private Button pasarTurnoBtn; // botón para ceder la iniciativa y permitir que el juego avance
+    private Button guardarBtn; // guardar el progreso actual en un archivo local
+    private Button cargarBtn; // recuperar una partida guardada previamente
 
-    private MotorJuego motor; // declara un atributo/campo de la clase donde se guarda estado
-    private PersistenciaJson persistenciaJson; // declara un atributo/campo de la clase donde se guarda estado
-    private static final Path RUTA_GUARDADO = Paths.get(System.getProperty("user.home"), "partida_guardada.json"); // declara un atributo/campo de la clase donde se guarda estado
+    // --- COMPONENTES DEL SISTEMA ---
+    private MotorJuego motor; // el núcleo del juego que procesa las reglas, movimientos y combates
+    private PersistenciaJson persistenciaJson; // gestor de archivos para guardar y cargar datos en formato JSON
+    private static final Path RUTA_GUARDADO = Paths.get(System.getProperty("user.home"), "partida_guardada.json"); // ubicación en el disco del archivo de salvado
 
-    // --- NUEVAS VARIABLES PARA SELECCIÓN DE CASILLAS ---
-    private int filaSeleccionada = -1; // declara un atributo/campo de la clase donde se guarda estado
-    private int columnaSeleccionada = -1; // declara un atributo/campo de la clase donde se guarda estado
-    private Button botonSeleccionadoAnterior = null; // declara un atributo/campo de la clase donde se guarda estado
+    // --- SISTEMA DE SELECCIÓN TÁCTICA DEL MAPA ---
+    private int filaSeleccionada = -1; // coordenada X de la celda del mapa que el jugador ha pinchado
+    private int columnaSeleccionada = -1; // coordenada Y de la celda del mapa que el jugador ha pinchado
+    private Button botonSeleccionadoAnterior = null; // guarda la referencia del último botón clickeado para poder quitarle el borde de selección
 
-    /**
-     * Constructor que inicializa los atributos principales del objeto
+    /** Constructor: Inicia la partida demo y monta los elementos visuales en la pantalla
      */
     public VentanaJuego() {
-        motor = MotorJuego.crearPartidaDemo(); // asigna o actualiza un valor necesario para el estado del programa
-        persistenciaJson = new PersistenciaJson(); // crea un nuevo objeto para poder usarlo después
-        inicializarComponentes(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        configurarAccionesBotones(); // <- NUEVA LLAMADA
-        construirVentana(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        motor = MotorJuego.crearPartidaDemo(); // genera un mapa de prueba con un jugador, monstruos y objetos
+        persistenciaJson = new PersistenciaJson(); // prepara el sistema de archivos de guardado
+        inicializarComponentes(); // crea las etiquetas, botones y paneles vacíos
+        configurarAccionesBotones(); // asigna los comportamientos y mecánicas a cada botón del juego
+        construirVentana(); // ensambla los componentes en el diseño visual definitivo
+        actualizarVista(); // dibuja por primera vez el mapa, estadísticas e inventario del jugador
     }
 
-    /**
-     * Crea los controles visuales antes de colocarlos en la ventana
+    /** Inicializa los componentes de la interfaz de usuario con sus propiedades base
      */
     private void inicializarComponentes() {
-        root = new BorderPane(); // crea un nuevo objeto para poder usarlo después
+        root = new BorderPane();
 
-        gridMapa = new GridPane(); // crea un nuevo objeto para poder usarlo después
-        gridMapa.setHgap(2); // ejecuta una llamada a un metodo para realizar una acción concreta
-        gridMapa.setVgap(2); // ejecuta una llamada a un metodo para realizar una acción concreta
-        gridMapa.setPadding(new Insets(10)); // crea un nuevo objeto para poder usarlo después
+        gridMapa = new GridPane();
+        gridMapa.setHgap(2); // separación horizontal entre las casillas del mapa
+        gridMapa.setVgap(2); // separación vertical entre las casillas del mapa
+        gridMapa.setPadding(new Insets(10));
 
-        areaRegistro = new TextArea(); // crea un nuevo objeto para poder usarlo después
-        areaRegistro.setEditable(false); // ejecuta una llamada a un metodo para realizar una acción concreta
-        areaRegistro.setPrefHeight(180); // ejecuta una llamada a un metodo para realizar una acción concreta
+        areaRegistro = new TextArea();
+        areaRegistro.setEditable(false); // evita que el jugador pueda modificar el texto de las acciones y movimientos
+        areaRegistro.setPrefHeight(180);
 
-        vidaLabel = new Label(); // crea un nuevo objeto para poder usarlo después
-        ataqueLabel = new Label(); // crea un nuevo objeto para poder usarlo después
-        defensaLabel = new Label(); // crea un nuevo objeto para poder usarlo después
-        turnosLabel = new Label(); // crea un nuevo objeto para poder usarlo después
+        vidaLabel = new Label();
+        ataqueLabel = new Label();
+        defensaLabel = new Label();
+        turnosLabel = new Label();
 
-        inventarioView = new ListView<>(); // crea un nuevo objeto para poder usarlo después
-        inventarioView.setPrefWidth(200); // ejecuta una llamada a un metodo para realizar una acción concreta
+        inventarioView = new ListView<>();
+        inventarioView.setPrefWidth(200);
 
-        moverBtn = new Button("Mover a Selección"); // crea un nuevo objeto para poder usarlo después
-        atacarBtn = new Button("Atacar Enemigo"); // crea un nuevo objeto para poder usarlo después
-        usarBtn = new Button("Usar Objeto Seleccionado"); // crea un nuevo objeto para poder usarlo después
-        recogerBtn = new Button("Recoger Objeto"); // crea un nuevo objeto para poder usarlo después
-        pasarTurnoBtn = new Button("Pasar Turno"); // crea un nuevo objeto para poder usarlo después
-        guardarBtn = new Button("Guardar Partida"); // crea un nuevo objeto para poder usarlo después
-        cargarBtn = new Button("Cargar Partida"); // crea un nuevo objeto para poder usarlo después
+        // textos que verá el jugador en su panel de acciones
+        moverBtn = new Button("Mover a Selección");
+        atacarBtn = new Button("Atacar Enemigo");
+        usarBtn = new Button("Usar Objeto Seleccionado");
+        recogerBtn = new Button("Recoger Objeto");
+        pasarTurnoBtn = new Button("Pasar Turno");
+        guardarBtn = new Button("Guardar Partida");
+        cargarBtn = new Button("Cargar Partida");
     }
 
-    /**
-     * NUEVO METODO: Conecta los botones inferiores con la lógica del MotorJuego
+    /** Vincula los botones de la interfaz con las reglas lógicas del motor del juego
      */
     private void configurarAccionesBotones() {
 
-        // ACCIÓN DEL BOTÓN RECOGER OBJETO
+        // --- MECÁNICA: RECOGER OBJETO ---
         recogerBtn.setOnAction(e -> {
-            if (filaSeleccionada == -1 || columnaSeleccionada == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Primero debes seleccionar una casilla en el mapa."); // ejecuta una llamada a un metodo para realizar una acción concreta
+            if (filaSeleccionada == -1 || columnaSeleccionada == -1) {
+                mostrarError("Primero debes seleccionar una casilla en el mapa.");
                 return;
             }
-            try { // intenta ejecutar código que puede producir una excepción
-                // Ejecutamos la acción en el motor
-                motor.recogerObjetoAdyacente(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un metodo para realizar una acción concreta
-                // Reseteamos selección tras el éxito
-                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
+            try {
+                // ordena al motor transferir el objeto de la celda al inventario del jugador
+                motor.recogerObjetoAdyacente(filaSeleccionada, columnaSeleccionada);
+                limpiarSeleccion(); // desmarca la casilla para evitar acciones repetidas involuntarias
+                actualizarVista(); // refresca la pantalla para mostrar que el objeto ya no está en el suelo
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarError(ex.getMessage()); // muestra alertas si el objeto está lejos o el inventario está lleno
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
 
-        // ACCIÓN DEL BOTÓN ATACAR
+        // --- MECÁNICA: ATACAR ---
         atacarBtn.setOnAction(e -> {
-            if (filaSeleccionada == -1 || columnaSeleccionada == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Primero debes seleccionar una casilla donde haya un enemigo."); // ejecuta una llamada a un metodo para realizar una acción concreta
+            if (filaSeleccionada == -1 || columnaSeleccionada == -1) {
+                mostrarError("Primero debes seleccionar una casilla donde haya un enemigo.");
                 return;
             }
-            try { // intenta ejecutar código que puede producir una excepción
-                motor.atacarAdyacente(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un metodo para realizar una acción concreta
-                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
+            try {
+                // el jugador ataca al enemigo en las coordenadas seleccionadas
+                motor.atacarAdyacente(filaSeleccionada, columnaSeleccionada);
+                limpiarSeleccion();
+                actualizarVista(); // muestra si el enemigo ha muerto, se ha reducido su vida o si el jugador recibió contraataque
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarError(ex.getMessage()); // error si intentas atacar al aire o a casillas lejanas
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
 
-        // ACCIÓN DEL BOTÓN MOVER
+        // --- MECÁNICA: MOVIMIENTO ---
         moverBtn.setOnAction(e -> {
-            if (filaSeleccionada == -1 || columnaSeleccionada == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Primero debes seleccionar a qué casilla te quieres mover."); // ejecuta una llamada a un metodo para realizar una acción concreta
+            if (filaSeleccionada == -1 || columnaSeleccionada == -1) {
+                mostrarError("Primero debes seleccionar a qué casilla te quieres mover.");
                 return;
             }
-            try { // intenta ejecutar código que puede producir una excepción
-                motor.moverJugador(filaSeleccionada, columnaSeleccionada); // ejecuta una llamada a un metodo para realizar una acción concreta
-                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
+            try {
+                // intenta desplazar al jugador a la celda marcada
+                motor.moverJugador(filaSeleccionada, columnaSeleccionada);
+                limpiarSeleccion();
+                actualizarVista(); // redibuja al jugador en su nueva posición y procesa si pisa trampas
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarError(ex.getMessage()); // error si la casilla está bloqueada o fuera del alcance de movimiento
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
 
-        // ACCIÓN DEL BOTÓN USAR OBJETO DEL INVENTARIO
+        // --- MECÁNICA: USAR OBJETO DEL INVENTARIO ---
         usarBtn.setOnAction(e -> {
-            int indiceSeleccionado = inventarioView.getSelectionModel().getSelectedIndex(); // asigna o actualiza un valor necesario para el estado del programa
-            if (indiceSeleccionado == -1) { // comprueba una condición para decidir qué camino sigue el programa
-                mostrarError("Debes seleccionar un objeto de la lista de tu inventario."); // ejecuta una llamada a un metodo para realizar una acción concreta
+            int indiceSeleccionado = inventarioView.getSelectionModel().getSelectedIndex();
+            if (indiceSeleccionado == -1) {
+                mostrarError("Debes seleccionar un objeto de la lista de tu inventario.");
                 return;
             }
-            try { // intenta ejecutar código que puede producir una excepción
-                motor.usarObjeto(indiceSeleccionado); // ejecuta una llamada a un metodo para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
+            try {
+                // el jugador consume una poción o se equipa un arma
+                motor.usarObjeto(indiceSeleccionado);
+                actualizarVista(); // aplica los cambios inmediatos en las estadísticas del jugador
             } catch (JuegoException ex) {
-                mostrarError(ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
+                mostrarError(ex.getMessage());
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
 
-        // ACCION DEL BOTÓN PASARTURNO
+        // --- MECÁNICA: GESTIÓN DE TURNO ---
         pasarTurnoBtn.setOnAction(e -> {
-            motor.finalizarTurnoVoluntariamente(); // Llama al motor para pasar de turno
-            actualizarVista();                     // Refresca el mapa, la vida y los turnos restantes
-            actualizarRegistro();                  // Muestra el texto en el panel de la derecha
+            motor.finalizarTurnoVoluntariamente(); // consume un turno del jugador y permite acciones ambientales si las hubiera
+            actualizarVista();
+            actualizarRegistro();
 
-            // Opcional: limpiar la selección de casillas para el siguiente turno
-            filaSeleccionada = -1; // asigna o actualiza un valor necesario para el estado del programa
-            columnaSeleccionada = -1; // asigna o actualiza un valor necesario para el estado del programa
-            if (botonSeleccionadoAnterior != null) { // comprueba una condición para decidir qué camino sigue el programa
-                botonSeleccionadoAnterior.setStyle(""); // ejecuta una llamada a un metodo para realizar una acción concreta
-                botonSeleccionadoAnterior = null; // asigna o actualiza un valor necesario para el estado del programa
+            // resetea la selección táctica para empezar el nuevo turno desde cero
+            filaSeleccionada = -1;
+            columnaSeleccionada = -1;
+            if (botonSeleccionadoAnterior != null) {
+                botonSeleccionadoAnterior.setStyle("");
+                botonSeleccionadoAnterior = null;
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
 
-        // ACCIÓN DEL BOTÓN GUARDAR PARTIDA
+        // --- SISTEMA: GUARDADO DE PARTIDA ---
         guardarBtn.setOnAction(e -> {
-            try { // intenta ejecutar código que puede producir una excepción
-                persistenciaJson.guardarEstado(motor, RUTA_GUARDADO); // ejecuta una llamada a un metodo para realizar una acción concreta
-                actualizarRegistro(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                mostrarMensajeInformativo("Partida guardada", "La partida se ha guardado en el archivo " + RUTA_GUARDADO + "."); // ejecuta una llamada a un metodo para realizar una acción concreta
+            try {
+                persistenciaJson.guardarEstado(motor, RUTA_GUARDADO); // serializa el estado de la mazmorra y el jugador en un archivo JSON
+                actualizarRegistro();
+                mostrarMensajeInformativo("Partida guardada", "La partida se ha guardado en el archivo " + RUTA_GUARDADO + ".");
             } catch (Exception ex) {
-                ex.printStackTrace(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                mostrarError("No se ha podido guardar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
+                ex.printStackTrace();
+                mostrarError("No se ha podido guardar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
 
-        // ACCIÓN DEL BOTÓN CARGAR PARTIDA
+        // --- SISTEMA: CARGAR PARTIDA ---
         cargarBtn.setOnAction(e -> {
-            try { // intenta ejecutar código que puede producir una excepción
-                motor = persistenciaJson.cargarEstado(RUTA_GUARDADO); // asigna o actualiza un valor necesario para el estado del programa
-                limpiarSeleccion(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                activarControles(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                actualizarVista(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                mostrarMensajeInformativo("Partida cargada", "La partida se ha cargado desde el archivo " + RUTA_GUARDADO + "."); // ejecuta una llamada a un metodo para realizar una acción concreta
+            try {
+                motor = persistenciaJson.cargarEstado(RUTA_GUARDADO); // reconstruye la mazmorra y el héroe desde el archivo JSON
+                limpiarSeleccion();
+                activarControles(); // asegura que los botones funcionen por si la partida anterior había terminado en derrota
+                actualizarVista();
+                mostrarMensajeInformativo("Partida cargada", "La partida se ha cargado desde el archivo " + RUTA_GUARDADO + ".");
             } catch (Exception ex) {
-                ex.printStackTrace(); // ejecuta una llamada a un metodo para realizar una acción concreta
-                mostrarError("No se ha podido cargar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage()); // ejecuta una llamada a un metodo para realizar una acción concreta
+                ex.printStackTrace();
+                mostrarError("No se ha podido cargar la partida: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
             }
-        }); // ejecuta una llamada a un metodo para realizar una acción concreta
+        });
     }
 
-    /**
-     * Borra la casilla seleccionada y quita el estilo visual de selección
+    /** Limpia las variables de selección táctica y remueve los efectos visuales de marcado del mapa
      */
     private void limpiarSeleccion() {
-        filaSeleccionada = -1; // asigna o actualiza un valor necesario para el estado del programa
-        columnaSeleccionada = -1; // asigna o actualiza un valor necesario para el estado del programa
-        if (botonSeleccionadoAnterior != null) { // comprueba una condición para decidir qué camino sigue el programa
-            botonSeleccionadoAnterior.setStyle(""); // Quitar el borde de marcado
-            botonSeleccionadoAnterior = null; // asigna o actualiza un valor necesario para el estado del programa
+        filaSeleccionada = -1;
+        columnaSeleccionada = -1;
+        if (botonSeleccionadoAnterior != null) {
+            botonSeleccionadoAnterior.setStyle(""); // quita el borde de selección del botón
+            botonSeleccionadoAnterior = null;
         }
     }
 
-    /**
-     * Organiza los paneles de la interfaz dentro del BorderPane principal
+    /** Diseña y distribuye espacialmente los paneles del juego en la ventana
      */
     private void construirVentana() {
-        VBox panelDerecho = new VBox(10); // crea un nuevo objeto para poder usarlo después
-        panelDerecho.setPadding(new Insets(10)); // crea un nuevo objeto para poder usarlo después
+        // panel lateral derecho: Información de estadísticas del jugador e inventario de equipo
+        VBox panelDerecho = new VBox(10);
+        panelDerecho.setPadding(new Insets(10));
         panelDerecho.getChildren().addAll(
                 new Label("--- ESTADO JUGADOR ---"),
                 vidaLabel, ataqueLabel, defensaLabel, turnosLabel,
                 new Label("--- INVENTARIO ---"),
                 inventarioView,
                 usarBtn
-        ); // ejecuta una llamada a un metodo para realizar una acción concreta
+        );
 
-        HBox panelInferiorBotones = new HBox(10); // crea un nuevo objeto para poder usarlo después
-        panelInferiorBotones.setPadding(new Insets(10)); // crea un nuevo objeto para poder usarlo después
-        panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn, pasarTurnoBtn, guardarBtn, cargarBtn); // ejecuta una llamada a un metodo para realizar una acción concreta
+        //panel inferior: botones de comandos y acciones
+        HBox panelInferiorBotones = new HBox(10);
+        panelInferiorBotones.setPadding(new Insets(10));
+        panelInferiorBotones.getChildren().addAll(moverBtn, recogerBtn, atacarBtn, pasarTurnoBtn, guardarBtn, cargarBtn);
 
-        VBox panelInferiorCompleto = new VBox(5); // crea un nuevo objeto para poder usarlo después
-        panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, areaRegistro); // ejecuta una llamada a un metodo para realizar una acción concreta
+        // une los botones y el cuadro de texto en la zona inferior de la pantalla
+        VBox panelInferiorCompleto = new VBox(5);
+        panelInferiorCompleto.getChildren().addAll(panelInferiorBotones, areaRegistro);
 
-        root.setCenter(gridMapa); // ejecuta una llamada a un metodo para realizar una acción concreta
-        root.setRight(panelDerecho); // ejecuta una llamada a un metodo para realizar una acción concreta
-        root.setBottom(panelInferiorCompleto); // ejecuta una llamada a un metodo para realizar una acción concreta
+        // distribución final en el contenedor raíz
+        root.setCenter(gridMapa); // el mapa de la mazmorra ocupa el centro de la pantalla
+        root.setRight(panelDerecho); // las estadísticas a la derecha
+        root.setBottom(panelInferiorCompleto); // el registro y los controles abajo
     }
 
-    /**
-     * Refresca toda la pantalla después de cualquier acción
+    /** Sincroniza y redibuja la interfaz gráfica completa con el estado interno del juego
      */
     public void actualizarVista() {
-        actualizarMapa(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        actualizarJugador(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        actualizarInventario(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        actualizarRegistro(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        verificarFinPartida(); // ejecuta una llamada a un metodo para realizar una acción concreta
+        actualizarMapa(); // redibuja las celdas, el jugador y los peligros
+        actualizarJugador(); // actualiza la salud, el ataque y turnos del jugador en el HUD
+        actualizarInventario(); // sincroniza la lista visual de ítems en las bolsas del jugador
+        actualizarRegistro(); // agrega los últimos mensajes de combate o exploración
+        verificarFinPartida(); // analiza si el jugador ha ganado (escapado) o muerto
     }
 
-    /**
-     * Reconstruye el mapa visual de botones a partir del estado actual de la habitación
+    /** Transforma la matriz lógica de la habitación en un mapa visual de botones interactivos con iconos
      */
     private void actualizarMapa() {
-        gridMapa.getChildren().clear(); // ejecuta una llamada a un metodo para realizar una acción concreta
-        Habitacion hab = motor.getHabitacionActual(); // asigna o actualiza un valor necesario para el estado del programa
-        Jugador jugador = motor.getJugador(); // asigna o actualiza un valor necesario para el estado del programa
+        gridMapa.getChildren().clear(); // vacía el mapa anterior para redibujarlo desde cero
+        Habitacion hab = motor.getHabitacionActual();
+        Jugador jugador = motor.getJugador();
 
-        for (int i = 0; i < hab.getFilas(); i++) { // bucle que repite instrucciones recorriendo elementos o posiciones
-            for (int j = 0; j < hab.getColumnas(); j++) { // bucle que repite instrucciones recorriendo elementos o posiciones
-                Celda celda = hab.getCelda(i, j); // asigna o actualiza un valor necesario para el estado del programa
-                Button btnCelda = new Button(); // crea un nuevo objeto para poder usarlo después
-                btnCelda.setPrefSize(65, 65); // ejecuta una llamada a un metodo para realizar una acción concreta
+        // recorrido de la matriz bidimensional de la habitación
+        for (int i = 0; i < hab.getFilas(); i++) {
+            for (int j = 0; j < hab.getColumnas(); j++) {
+                Celda celda = hab.getCelda(i, j);
+                Button btnCelda = new Button();
+                btnCelda.setPrefSize(65, 65); // define el tamaño cuadrado de cada casilla del mapa
 
-                // Estilos visuales según el tipo de contenido
-                if (i == jugador.getPosicionX() && j == jugador.getPosicionY()) { // comprueba una condición para decidir qué camino sigue el programa
-                    btnCelda.setText("🧍️"); // Jugador
-                    btnCelda.setStyle("-fx-background-color: #87CEEB; -fx-font-weight: bold;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                // --- RENDERIZADO VISUAL SEGÚN EL CONTENIDO DE LA CELDA ---
+                if (i == jugador.getPosicionX() && j == jugador.getPosicionY()) {
+                    btnCelda.setText("🧍️"); // icono del jugador
+                    btnCelda.setStyle("-fx-background-color: #87CEEB; -fx-font-weight: bold;");
                 } else {
                     switch (celda.getTipo()) {
                         case VACIA:
-                            btnCelda.setText(""); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            break; // controla el flujo del bucle actual.
+                            btnCelda.setText(""); // suelo normal transitable
+                            break;
                         case OBJETO:
-                            btnCelda.setText("💎"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #FFFACD;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            break; // controla el flujo del bucle actual.
+                            btnCelda.setText("💎"); // tesoro, poción o equipamiento en el suelo
+                            btnCelda.setStyle("-fx-background-color: #FFFACD;");
+                            break;
                         case ENEMIGO:
-                            btnCelda.setText("👹"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #FF6347;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            break; // controla el flujo del bucle actual.
+                            btnCelda.setText("👹"); // monstruo agresivo esperando combate
+                            btnCelda.setStyle("-fx-background-color: #FF6347;");
+                            break;
                         case TRAMPA:
-                            btnCelda.setText("🕳️"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #DDA0DD;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            break; // controla el flujo del bucle actual.
+                            btnCelda.setText("🕳️"); // foso, pinchos o peligro oculto
+                            btnCelda.setStyle("-fx-background-color: #DDA0DD;");
+                            break;
                         case PUERTA:
-                            btnCelda.setText("🚪"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #98FB98;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            break; // controla el flujo del bucle actual.
+                            btnCelda.setText("🚪"); // transición a una nueva zona o habitación de la mazmorra
+                            btnCelda.setStyle("-fx-background-color: #98FB98;");
+                            break;
                         case SALIDA:
-                            btnCelda.setText("🏁"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            btnCelda.setStyle("-fx-background-color: #DB7093;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                            break; // controla el flujo del bucle actual.
+                            btnCelda.setText("🏁"); // meta final para escapar y ganar el juego
+                            btnCelda.setStyle("-fx-background-color: #DB7093;");
+                            break;
                     }
                 }
 
-                // --- GESTIÓN DEL CLICK EN EL MAPA ---
-                final int f = i; // asigna o actualiza un valor necesario para el estado del programa.
-                final int c = j; // asigna o actualiza un valor necesario para el estado del programa.
+                // --- GESTIÓN DE CLICKS (SELECCIÓN TÁCTICA DE CASILLAS) ---
+                final int f = i;
+                final int c = j;
                 btnCelda.setOnAction(e -> {
-                    // Si ya había un botón seleccionado antes, le quitamos el borde rojo
-                    if (botonSeleccionadoAnterior != null) { // comprueba una condición para decidir qué camino sigue el programa.
-                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: red; -fx-border-width: 2px;", "")); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                    // si el jugador pincha una celda teniendo otra seleccionada, le quita el borde de selección a la anterior
+                    if (botonSeleccionadoAnterior != null) {
+                        botonSeleccionadoAnterior.setStyle(botonSeleccionadoAnterior.getStyle().replace("-fx-border-color: red; -fx-border-width: 2px;", ""));
                     }
 
-                    // Guardamos la nueva posición seleccionada
-                    filaSeleccionada = f; // asigna o actualiza un valor necesario para el estado del programa.
-                    columnaSeleccionada = c; // asigna o actualiza un valor necesario para el estado del programa.
-                    botonSeleccionadoAnterior = btnCelda; // asigna o actualiza un valor necesario para el estado del programa.
+                    // registra las coordenadas de la celda elegida como objetivo de la próxima acción
+                    filaSeleccionada = f;
+                    columnaSeleccionada = c;
+                    botonSeleccionadoAnterior = btnCelda;
 
-                    // Le ponemos un borde rojo llamativo al botón clicado para que sepamos cuál es
-                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #0F172A; -fx-border-width: 2px;"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-                }); // ejecuta una llamada a un metodo para realizar una acción concreta.
+                    // pinta un contorno oscuro y marcado alrededor de la casilla seleccionada por el jugador
+                    btnCelda.setStyle(btnCelda.getStyle() + "-fx-border-color: #0F172A; -fx-border-width: 2px;");
+                });
 
-                gridMapa.add(btnCelda, j, i); // En GridPane se añade (columna, fila)
+                gridMapa.add(btnCelda, j, i); // coloca el botón en la cuadrícula visual de JavaFX
             }
         }
     }
 
-    /**
-     * Comprueba si la partida ha terminado por victoria o derrota y desactiva controles.
+    /** Evalúa si las condiciones de fin de juego se han cumplido tras la última acción
      */
     private void verificarFinPartida() {
-        if (motor.isVictoria()) { // comprueba una condición para decidir qué camino sigue el programa.
-            mostrarMensajeInformativo("¡VICTORIA!", "¡Enhorabuena! Has logrado escapar de la mazmorra."); // ejecuta una llamada a un metodo para realizar una acción concreta.
-            desactivarControles(); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        if (motor.isVictoria()) {
+            mostrarMensajeInformativo("¡VICTORIA!", "¡Enhorabuena! Has logrado escapar de la mazmorra.");
+            desactivarControles(); // bloquea el juego tras ganar para evitar seguir jugando
         } else if (motor.isDerrota()) {
-            mostrarMensajeInformativo("GAME OVER", "Has sido derrotado. Inténtalo de nuevo."); // ejecuta una llamada a un metodo para realizar una acción concreta.
-            desactivarControles(); // ejecuta una llamada a un metodo para realizar una acción concreta.
+            mostrarMensajeInformativo("GAME OVER", "Has sido derrotado. Inténtalo de nuevo.");
+            desactivarControles(); // bloquea los controles tras morir en la mazmorra
         }
     }
 
-    /**
-     * Bloquea los botones cuando ya no se puede jugar.
+    /** Inhabilita la interacción con el mapa y los botones cuando la partida ha concluido
      */
     private void desactivarControles() {
-        gridMapa.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        moverBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        atacarBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        recogerBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        usarBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        pasarTurnoBtn.setDisable(true); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        gridMapa.setDisable(true);
+        moverBtn.setDisable(true);
+        atacarBtn.setDisable(true);
+        recogerBtn.setDisable(true);
+        usarBtn.setDisable(true);
+        pasarTurnoBtn.setDisable(true);
     }
 
-    /**
-     * Vuelve a habilitar los botones de acción.
+    /** Habilita de nuevo los controles tácticos del juego (útil al cargar una partida en curso)
      */
     private void activarControles() {
-        gridMapa.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        moverBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        atacarBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        recogerBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        usarBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        pasarTurnoBtn.setDisable(false); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        gridMapa.setDisable(false);
+        moverBtn.setDisable(false);
+        atacarBtn.setDisable(false);
+        recogerBtn.setDisable(false);
+        usarBtn.setDisable(false);
+        pasarTurnoBtn.setDisable(false);
     }
 
-    /**
-     * Muestra en pantalla las estadísticas actuales del jugador.
+    /** Modifica los textos informativos en el HUD con la vida, estadísticas y turnos del héroe
      */
     private void actualizarJugador() {
-        vidaLabel.setText("Vida: " + motor.getJugador().getVidaActual() + "/" + motor.getJugador().getVidaMax()); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        ataqueLabel.setText("Ataque: " + motor.getJugador().getAtaqueTotal()); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        defensaLabel.setText("Defensa: " + motor.getJugador().getDefensaTotal()); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        turnosLabel.setText("Turnos restantes: " + motor.getTurnosRestantes()); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        vidaLabel.setText("Vida: " + motor.getJugador().getVidaActual() + "/" + motor.getJugador().getVidaMax());
+        ataqueLabel.setText("Ataque: " + motor.getJugador().getAtaqueTotal());
+        defensaLabel.setText("Defensa: " + motor.getJugador().getDefensaTotal());
+        turnosLabel.setText("Turnos restantes: " + motor.getTurnosRestantes());
     }
 
-    /**
-     * Actualiza la lista visible de objetos del inventario.
+    /** Sincroniza la lista visual del inventario recorriendo los objetos que posee el jugador actualmente
      */
     private void actualizarInventario() {
-        inventarioView.getItems().clear(); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        for (int i = 0; i < motor.getJugador().getInventario().tamaño(); i++) { // bucle que repite instrucciones recorriendo elementos o posiciones.
-            Objeto objeto = motor.getJugador().getInventario().obtener(i); // asigna o actualiza un valor necesario para el estado del programa.
-            inventarioView.getItems().add(objeto.getNombre() + " (" + objeto.getTipo() + ")"); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        inventarioView.getItems().clear(); // Borra la lista gráfica anterior
+        for (int i = 0; i < motor.getJugador().getInventario().tamaño(); i++) {
+            Objeto objeto = motor.getJugador().getInventario().obtener(i);
+            // Añade el nombre del ítem y su categoría (Ej: "Poción de Salud (CONSUMIBLE)")
+            inventarioView.getItems().add(objeto.getNombre() + " (" + objeto.getTipo() + ")");
         }
     }
 
-    /**
-     * Muestra en el área de texto el historial de eventos de la partida.
+    /** Vuelca los mensajes de eventos y combates generados por el motor en el cuadro de texto inferior
      */
     private void actualizarRegistro() {
-        areaRegistro.setText(motor.getRegistro().comoTexto()); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        areaRegistro.setScrollTop(Double.MAX_VALUE); // Auto-scroll hacia abajo
+        areaRegistro.setText(motor.getRegistro().comoTexto());
+        areaRegistro.setScrollTop(Double.MAX_VALUE); // Fuerza al scroll a bajar automáticamente para leer los últimos sucesos
     }
 
-    /**
-     * Abre una alerta de error con un mensaje para el usuario.
+    /** Despliega una ventana emergente de alerta roja en caso de errores en las acciones
      */
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.ERROR); // crea un nuevo objeto para poder usarlo después.
-        alert.setTitle("Error en la Acción"); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        alert.setHeaderText(null); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        alert.setContentText(mensaje); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        alert.showAndWait(); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error en la Acción");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
-    /**
-     * Abre una alerta informativa con título y mensaje.
+    /** Despliega una ventana emergente azul informativa para hitos (Cargar, Guardar, Victoria, Derrota)
      */
     private void mostrarMensajeInformativo(String titulo, String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION); // crea un nuevo objeto para poder usarlo después.
-        alert.setTitle(titulo); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        alert.setHeaderText(null); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        alert.setContentText(mensaje); // ejecuta una llamada a un metodo para realizar una acción concreta.
-        alert.showAndWait(); // ejecuta una llamada a un metodo para realizar una acción concreta.
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
-    /**
-     * Devuelve el contenedor raíz para insertarlo en la escena JavaFX.
+    /** Proporciona el contenedor raíz del entorno visual para acoplarlo en la Escena principal de JavaFX
      */
     public Parent getRoot() {
-        return root; // devuelve el resultado calculado por el metodo.
+        return root;
     }
 }
